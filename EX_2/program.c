@@ -123,7 +123,7 @@ void write_meta_data(IntMetadataNode* metaData) {
     output = NULL;
 }
 
-int main() {
+int main(void) {
     // Read meta data from file
     IntMetadataNode* metaData = readMetaData();
 
