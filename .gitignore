@@ -1,7 +1,10 @@
 EX_1/obj
 EX_2/obj
+EX_2/number-program
 EX_3/obj
+EX_3/booking-system
 EX_4/obj
 EX_5/obj
 EX_6/obj
-.vscode/settings.json
+!*.*
+.vscode
