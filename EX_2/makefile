@@ -8,7 +8,7 @@ CFLAGS += -I$(INCLDIR)
 OBJDIR = obj
 
  # list all header files on the line below
-_DEPS = integer-utils.h 
+_DEPS = integer-utils.h integer-metadata.h
 DEPS = $(patsubst %, $(INCLDIR)/%, $(_DEPS))
 
 #replace source files in the line below, 
