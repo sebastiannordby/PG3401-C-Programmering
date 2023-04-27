@@ -109,7 +109,7 @@ void write_meta_data(IntMetadataNode* metaData) {
             data.iIndex, data.iNumber, data.bIsAbdundantNumber);
         // Access other metadata fields here
 
-        char *format = "Index: %03d\tNumber: %32s\tabun: %d\tcube: %d\tdef: %d\tfib: %d\todd: %d\t pert: %d\tprime: %d\tsqrt: %d\r\n";
+        char *format = "Index: %03d\tNumber: %32s\tabun: %d\tcube: %d\tdef: %d\tfib: %d\todd: %d\tpert: %d\tprime: %d\tsqrt: %d\r\n";
 
         fprintf(output, format,
             data.iIndex, int_to_binary(data.iNumber), data.bIsAbdundantNumber,  
