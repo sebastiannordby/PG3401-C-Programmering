@@ -4,29 +4,50 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+// Declare functions to skip precendence in code
+void printDottedLine(int length);
+
 /*
     Prints out a flight in the following format:
-    Id: @ Destination: @ Depature: @
+    {id} | {destination} | {departure}
+
+    Then the passenger list in the following format:
+    {seat} | {name} | {age}
 */
 void printFlight(const Flight *flight) {
     printDottedLine(100);
+    printf("%-10s| %-50s| %-10s | %-10s\r\n", 
+        "Id", "Destination", "Depature", "Seats");
     printf("%-10s| %-50s| %-10d | %-10d\r\n", 
         flight->flightID, flight->destination, 
         flight->departureTime, flight->numberOfSeats);
-    printf("%-10s| %-50s| %-10s | %-10s\r\n", "Id", "Destination", "Depature", "Seats");
-
+    printDottedLine(100);
+    
     if(flight->pPassengers != NULL) {
+        Passenger *currentPassenger = flight->pPassengers;
+        printf("%-5s| %-50s| %-3s\r\n", 
+            "Seat", "Name", "Age");
 
+        while(currentPassenger != NULL) {
+            printf("%-5hu| %-50s| %-3hu\r\n",
+                currentPassenger->seatNumber,
+                currentPassenger->name,
+                currentPassenger->age);
+
+            currentPassenger = currentPassenger->pNext;
+        }
     }
 
     printDottedLine(100);
 }
 
 /*
-    Prints out the list of flights in the following format:
-    Id: @ Destination: @ Depature: @
+    Prints out a dotted line in the provided length
 */
 void printDottedLine(int length) {
+    if(length <= 0)
+        return;
+
     for(int i = 0; i <= length; i++) 
         putchar('-');
 
@@ -139,18 +160,18 @@ Passenger* getPassengerClosestToSeatNumber(Flight *flight, unsigned short seatNu
 
 /*
     Adds a passenger to the given flight.
-    If the requstedSeatNumber is -1, take the first available.
+    If the requstedSeatNumber is 0, take the first available.
 */
 bool addPassenger(Flight *flight, unsigned short requestedSeatNumber, 
     char name[PASSENGER_NAME_MAX_LENGTH], unsigned short age) {
     
     // Check if arguments passed is valid
-    if(flight == NULL || name == NULL || age < 0)
+    if(flight == NULL || name == NULL)
         return false;
 
     Passenger *newPassenger = malloc(sizeof(Passenger));
     newPassenger->age = age;
-    newPassenger->seatNumber = requestedSeatNumber;
+    newPassenger->seatNumber = requestedSeatNumber != 0 ? requestedSeatNumber : 1;
     strncpy(newPassenger->name, name, sizeof(newPassenger->name));
 
     if(flight->pPassengers == NULL) {
@@ -205,6 +226,9 @@ void printPassengerList(const Flight *pFlight) {
     }
 }
 
+/*
+    Returns a flight by the given flightId.
+*/
 Flight* getFlightById(FlightList *pFlightList, char flightId[FLIGHT_ID_MAX_LENGTH]) {
     if(pFlightList == NULL || flightId == NULL)
         return NULL;
@@ -215,8 +239,27 @@ Flight* getFlightById(FlightList *pFlightList, char flightId[FLIGHT_ID_MAX_LENGT
     // an occurence of NULL which suggest that there is no flight
     // with the provided id.
     while(currentFlight != NULL && strcmp(currentFlight->flightID, flightId) != 0) {
-        printf("CurrentFlight: %s\r\n", currentFlight->flightID);
         currentFlight = currentFlight->pNext;
+    }
+
+    return currentFlight;
+}
+
+/*
+    Returns a flight at the given index. 
+    Indexing starts as 1.
+*/
+Flight* getFlightByIndex(FlightList *pFlightList, unsigned short index) {
+    if(pFlightList == NULL)
+        return NULL;
+
+    
+    int currIndex = 1;
+    Flight *currentFlight = pFlightList->head;
+
+    while(currentFlight != NULL && currIndex <= index - 1) {
+        currentFlight = currentFlight->pNext;
+        currIndex++;
     }
 
     return currentFlight;

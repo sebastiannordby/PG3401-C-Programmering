@@ -2,37 +2,49 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define STRINGIFY(x) #x
 
+// Menu choices
 const unsigned short MN_ADD_FLIGHT = 1;
 const unsigned short MN_ADD_PASSENGER = 2;
 const unsigned short MN_PRINT_FLIGHT = 3;
 const unsigned short MN_FIND_FLIGHT_BY_TIME = 4;
-const unsigned short MN_DELETE_FLIGHT = 5;
-const unsigned short MN_REMOVE_PASSENGER_RES = 6;
-const unsigned short MN_CHANGE_PASSENGER_SEAT = 7;
-const unsigned short MN_SEARCH_PASSENGER = 8;
-const unsigned short MN_EXIT_PROGRAM = 9;
+const unsigned short MN_FIND_FLIGHT_BY_INDEX = 5;
+const unsigned short MN_DELETE_FLIGHT = 6;
+const unsigned short MN_REMOVE_PASSENGER_RES = 7;
+const unsigned short MN_CHANGE_PASSENGER_SEAT = 8;
+const unsigned short MN_SEARCH_PASSENGER = 9;
+const unsigned short MN_PRINT_ALL_FLIGHTS = 10;
+const unsigned short MN_EXIT_PROGRAM = 11;
 
+// Declare functions to skip precendence in code
 int readMenuChoice(void);
 void printMenu(void);
 void promptAddFlight(FlightList *flightList);
 void promptAddPassenger(FlightList *flightList);
 void promptPrintFlight(FlightList *flightList);
 void promptFindFlightByTime(FlightList *flightList);
+void promptFindFlightByIndex(FlightList *flightList);
 void promptDeleteFlight(FlightList *flightList);
 void promptRemovePassengerRes(FlightList *flightList);
 void promptChangePassengerSeat(FlightList *flightList);
 void promptSearchPassenger(FlightList *flightList);
 void freeFlightList(FlightList *flightList);
 void readString(char *str, int maxLength);
+void usePredefinedData(FlightList *flightList);
 
-int main(void) {
+int main(int argc, char *argv[]) {
     FlightList *flightList = malloc(sizeof(FlightList));
     if(flightList == NULL) {
         printf("Could not create flight list.\r\n");
         return 1;
     }
+
+    // If there are any arguments run with preloaded
+    // flight data. Easier for debugging purposes.
+    if(argc > 0) {
+        usePredefinedData(flightList);
+    }
+
 
     int choice;
 
@@ -45,11 +57,14 @@ int main(void) {
                 promptAddPassenger(flightList);
                 break;
             case MN_PRINT_FLIGHT:
-                promptPrintFlight();
+                promptPrintFlight(flightList);
                 break;
             // case MN_FIND_FLIGHT_BY_TIME:
             //     promptFindFlightByTime();
             //     break;
+            case MN_FIND_FLIGHT_BY_INDEX:
+                promptFindFlightByIndex(flightList);
+                break;
             // case MN_DELETE_FLIGHT:
             //     promptDeleteFlight();
             //     break;
@@ -62,6 +77,9 @@ int main(void) {
             // case MN_SEARCH_PASSENGER:
             //     promptSearchPassenger();
             //     break;
+            case MN_PRINT_ALL_FLIGHTS:
+                printFlightList(flightList);
+                break;
         }
     }
 
@@ -77,10 +95,12 @@ void printMenu(void) {
     printf("%d. Add passenger to a flight\r\n", MN_ADD_PASSENGER);
     printf("%d. Print flight\r\n", MN_PRINT_FLIGHT);
     printf("%d. Find flight by time\r\n", MN_FIND_FLIGHT_BY_TIME);
+    printf("%d. Find flight by index\r\n", MN_FIND_FLIGHT_BY_INDEX);
     printf("%d. Delete a flight\r\n", MN_DELETE_FLIGHT);
     printf("%d. Remove passenger reservation\r\n", MN_REMOVE_PASSENGER_RES);
     printf("%d. Change seat for passenger\r\n", MN_CHANGE_PASSENGER_SEAT);
     printf("%d. Search for passenger\r\n", MN_SEARCH_PASSENGER);
+    printf("%d. List all flights\r\n", MN_PRINT_ALL_FLIGHTS);
     printf("%d. Exit the program\r\n", MN_EXIT_PROGRAM);
 }
 
@@ -207,4 +227,72 @@ void promptPrintFlight(FlightList *flightList) {
         printf("No flight with id of: %s\r\n", flightId);
         return;
     }
+
+    printf("Information for flight %s\r\n", flightId);
+    printFlight(flight);
+}
+
+void usePredefinedData(FlightList *flightList) {
+    printf("Using predefined data..\r\n");
+
+    printf("Adding flights...\r\n");
+
+    char f1Id[FLIGHT_ID_MAX_LENGTH] = "OSL1234";
+    char f1Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Oslo Lufthavn";
+    char f2Id[FLIGHT_ID_MAX_LENGTH] = "GDN1234";
+    char f2Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Gdansk Airport";
+    char f3Id[FLIGHT_ID_MAX_LENGTH] = "AYA1234";
+    char f3Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Alanya International";
+    char f4Id[FLIGHT_ID_MAX_LENGTH] = "CHN1234";
+    char f4Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Oslo Lufthavn";
+    char f5Id[FLIGHT_ID_MAX_LENGTH] = "STC1234";
+    char f5Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Stockholm Airport";
+    char f6Id[FLIGHT_ID_MAX_LENGTH] = "TEN1234";
+    char f6Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Tenerife Intr Airport";
+
+    Flight* f1 = addFlight(flightList, f1Id, f1Dest, 22, 1020);
+    Flight* f2 = addFlight(flightList, f2Id, f2Dest, 22, 1020);
+    Flight* f3 = addFlight(flightList, f3Id, f3Dest, 22, 1020);
+    Flight* f4 = addFlight(flightList, f4Id, f4Dest, 22, 1020);
+    Flight* f5 = addFlight(flightList, f5Id, f5Dest, 22, 1020);
+    Flight* f6 = addFlight(flightList, f6Id, f6Dest, 22, 1020);
+
+    printf("Adding passengers\r\n");
+
+    char f1P1Name[PASSENGER_NAME_MAX_LENGTH] = "Dennis MacAlistair Ritchie";
+    char f1P2Name[PASSENGER_NAME_MAX_LENGTH] = "Aaron Swartz";
+    char f1P3Name[PASSENGER_NAME_MAX_LENGTH] = "Linus Thorvalds";
+    addPassenger(f1, 0, f1P1Name, 55);
+    addPassenger(f1, 0, f1P2Name, 23);
+    addPassenger(f1, 0, f1P3Name, 56);
+
+    char f2P1Name[PASSENGER_NAME_MAX_LENGTH] = "Alan Turing";
+    char f2P2Name[PASSENGER_NAME_MAX_LENGTH] = "Bill Gates";
+    char f2P3Name[PASSENGER_NAME_MAX_LENGTH] = "Linus Thorvalds";
+    addPassenger(f2, 0, f2P1Name, 21);
+    addPassenger(f2, 0, f2P2Name, 42);
+    addPassenger(f2, 0, f2P3Name, 65);
+
+    char f6P1Name[PASSENGER_NAME_MAX_LENGTH] = "Tim Berners-Lee";
+    char f6P2Name[PASSENGER_NAME_MAX_LENGTH] = "James Gosling";
+    char f6P3Name[PASSENGER_NAME_MAX_LENGTH] = "Brian Kernighan";
+    addPassenger(f6, 0, f6P1Name, 21);
+    addPassenger(f6, 0, f6P2Name, 42);
+    addPassenger(f6, 0, f6P3Name, 88);
+
+    printf("Program now uses predefined data.\r\n");
+}
+
+void promptFindFlightByIndex(FlightList *flightList) {
+    printf("Find flight by index.\r\n");
+    printf("Enter index: ");
+    unsigned short index;
+    scanf("%hu", &index);
+
+    Flight *flight = getFlightByIndex(flightList, index);
+
+    if(flight == NULL) 
+        return;
+
+    printFlight(flight);
 }

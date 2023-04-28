@@ -2,7 +2,7 @@
 #define __FLIGHT_BOOKING_H__
 
 #include <stdbool.h>
-#define PASSENGER_NAME_MAX_LENGTH 100
+#define PASSENGER_NAME_MAX_LENGTH 50
 #define FLIGHT_ID_MAX_LENGTH 10
 #define FLIGHT_DESTINATION_MAX_LENGTH 50
 
@@ -59,6 +59,10 @@ Flight* addFlight(
 Flight* getFlightById(
     FlightList *pFlightList, 
     char flightId[FLIGHT_ID_MAX_LENGTH]);
+
+Flight* getFlightByIndex(
+    FlightList *pFlightList,
+    unsigned short index);
 
 /*
     Adds a passenger to the given flight.
