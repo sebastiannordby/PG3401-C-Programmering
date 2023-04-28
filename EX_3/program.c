@@ -22,7 +22,7 @@ void printMenu(void);
 void promptAddFlight(FlightList *flightList);
 void promptAddPassenger(FlightList *flightList);
 void promptPrintFlight(FlightList *flightList);
-void promptFindFlightByTime(FlightList *flightList);
+void promptFindFlightByDepartureTime(FlightList *flightList);
 void promptFindFlightByIndex(FlightList *flightList);
 void promptDeleteFlight(FlightList *flightList);
 void promptRemovePassengerRes(FlightList *flightList);
@@ -59,15 +59,15 @@ int main(int argc, char *argv[]) {
             case MN_PRINT_FLIGHT:
                 promptPrintFlight(flightList);
                 break;
-            // case MN_FIND_FLIGHT_BY_TIME:
-            //     promptFindFlightByTime();
-            //     break;
+            case MN_FIND_FLIGHT_BY_TIME:
+                promptFindFlightByDepartureTime(flightList);
+                break;
             case MN_FIND_FLIGHT_BY_INDEX:
                 promptFindFlightByIndex(flightList);
                 break;
-            // case MN_DELETE_FLIGHT:
-            //     promptDeleteFlight();
-            //     break;
+            case MN_DELETE_FLIGHT:
+                promptDeleteFlight(flightList);
+                break;
             // case MN_REMOVE_PASSENGER_RES:
             //     promptRemovePassengerRes();
             //     break;
@@ -237,45 +237,45 @@ void usePredefinedData(FlightList *flightList) {
 
     printf("Adding flights...\r\n");
 
-    char f1Id[FLIGHT_ID_MAX_LENGTH] = "OSL1234";
-    char f1Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Oslo Lufthavn";
-    char f2Id[FLIGHT_ID_MAX_LENGTH] = "GDN1234";
-    char f2Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Gdansk Airport";
-    char f3Id[FLIGHT_ID_MAX_LENGTH] = "AYA1234";
-    char f3Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Alanya International";
-    char f4Id[FLIGHT_ID_MAX_LENGTH] = "CHN1234";
-    char f4Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Oslo Lufthavn";
-    char f5Id[FLIGHT_ID_MAX_LENGTH] = "STC1234";
-    char f5Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Stockholm Airport";
-    char f6Id[FLIGHT_ID_MAX_LENGTH] = "TEN1234";
-    char f6Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Tenerife Intr Airport";
+    char f1Id[FLIGHT_ID_MAX_LENGTH] = "OSL1234\0";
+    char f1Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Oslo Lufthavn\0";
+    char f2Id[FLIGHT_ID_MAX_LENGTH] = "GDN1234\0";
+    char f2Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Gdansk Airport\0";
+    char f3Id[FLIGHT_ID_MAX_LENGTH] = "AYA1234\0";
+    char f3Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Alanya International\0";
+    char f4Id[FLIGHT_ID_MAX_LENGTH] = "CHN1234\0";
+    char f4Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Oslo Lufthavn\0";
+    char f5Id[FLIGHT_ID_MAX_LENGTH] = "STC1234\0";
+    char f5Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Stockholm Airport\0";
+    char f6Id[FLIGHT_ID_MAX_LENGTH] = "TEN1234\0";
+    char f6Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Tenerife Intr Airport\0";
 
-    Flight* f1 = addFlight(flightList, f1Id, f1Dest, 22, 1020);
+    Flight* f1 = addFlight(flightList, f1Id, f1Dest, 22, 820);
     Flight* f2 = addFlight(flightList, f2Id, f2Dest, 22, 1020);
-    Flight* f3 = addFlight(flightList, f3Id, f3Dest, 22, 1020);
-    Flight* f4 = addFlight(flightList, f4Id, f4Dest, 22, 1020);
-    Flight* f5 = addFlight(flightList, f5Id, f5Dest, 22, 1020);
-    Flight* f6 = addFlight(flightList, f6Id, f6Dest, 22, 1020);
+    Flight* f3 = addFlight(flightList, f3Id, f3Dest, 22, 1120);
+    Flight* f4 = addFlight(flightList, f4Id, f4Dest, 22, 1220);
+    Flight* f5 = addFlight(flightList, f5Id, f5Dest, 22, 1320);
+    Flight* f6 = addFlight(flightList, f6Id, f6Dest, 22, 1420);
 
     printf("Adding passengers\r\n");
 
-    char f1P1Name[PASSENGER_NAME_MAX_LENGTH] = "Dennis MacAlistair Ritchie";
-    char f1P2Name[PASSENGER_NAME_MAX_LENGTH] = "Aaron Swartz";
-    char f1P3Name[PASSENGER_NAME_MAX_LENGTH] = "Linus Thorvalds";
+    char f1P1Name[PASSENGER_NAME_MAX_LENGTH] = "Dennis MacAlistair Ritchie\0";
+    char f1P2Name[PASSENGER_NAME_MAX_LENGTH] = "Aaron Swartz\0";
+    char f1P3Name[PASSENGER_NAME_MAX_LENGTH] = "Linus Thorvalds\0";
     addPassenger(f1, 0, f1P1Name, 55);
     addPassenger(f1, 0, f1P2Name, 23);
     addPassenger(f1, 0, f1P3Name, 56);
 
-    char f2P1Name[PASSENGER_NAME_MAX_LENGTH] = "Alan Turing";
-    char f2P2Name[PASSENGER_NAME_MAX_LENGTH] = "Bill Gates";
-    char f2P3Name[PASSENGER_NAME_MAX_LENGTH] = "Linus Thorvalds";
+    char f2P1Name[PASSENGER_NAME_MAX_LENGTH] = "Alan Turing\0";
+    char f2P2Name[PASSENGER_NAME_MAX_LENGTH] = "Bill Gates\0";
+    char f2P3Name[PASSENGER_NAME_MAX_LENGTH] = "Linus Thorvalds\0";
     addPassenger(f2, 0, f2P1Name, 21);
     addPassenger(f2, 0, f2P2Name, 42);
     addPassenger(f2, 0, f2P3Name, 65);
 
-    char f6P1Name[PASSENGER_NAME_MAX_LENGTH] = "Tim Berners-Lee";
-    char f6P2Name[PASSENGER_NAME_MAX_LENGTH] = "James Gosling";
-    char f6P3Name[PASSENGER_NAME_MAX_LENGTH] = "Brian Kernighan";
+    char f6P1Name[PASSENGER_NAME_MAX_LENGTH] = "Tim Berners-Lee\0";
+    char f6P2Name[PASSENGER_NAME_MAX_LENGTH] = "James Gosling\0";
+    char f6P3Name[PASSENGER_NAME_MAX_LENGTH] = "Brian Kernighan\0";
     addPassenger(f6, 0, f6P1Name, 21);
     addPassenger(f6, 0, f6P2Name, 42);
     addPassenger(f6, 0, f6P3Name, 88);
@@ -287,7 +287,11 @@ void promptFindFlightByIndex(FlightList *flightList) {
     printf("Find flight by index.\r\n");
     printf("Enter index: ");
     unsigned short index;
-    scanf("%hu", &index);
+    int indexInputRes = scanf("%hu", &index);
+    if(indexInputRes != 1) {
+        printf("An error occured inputing index.");
+        return;
+    }
 
     Flight *flight = getFlightByIndex(flightList, index);
 
@@ -295,4 +299,37 @@ void promptFindFlightByIndex(FlightList *flightList) {
         return;
 
     printFlight(flight);
+}
+
+void promptFindFlightByDepartureTime(FlightList *flightList) {
+    printf("Find flight by departure time.\r\n");
+    printf("Enter departure: ");
+    unsigned short departureTime;
+    int departureTimeInputRes = scanf("%hu", &departureTime);
+    if(departureTimeInputRes != 1) {
+        printf("An error occured inputing departure time.");
+        return;
+    }
+
+    Flight *flight = getFlightByDepartureTime(flightList, departureTime);
+
+    if(flight == NULL) {
+        printf("Could not find flight with depature at \"%hu\"\r\n", departureTime);
+        return;
+    }
+
+    printf("Found flight with depature at \"%hu\"\r\n", departureTime);
+    printFlight(flight);
+}
+
+void promptDeleteFlight(FlightList *pFlightList) {
+    printf("Delete flight.\r\n");
+    char flightId[FLIGHT_ID_MAX_LENGTH];
+    printf("Enter flight id: ");
+    readString(flightId, FLIGHT_ID_MAX_LENGTH);
+
+    if(deleteFlight(pFlightList, flightId)) 
+        printf("Successfully deleted flight \"%s\"\r\n", flightId);
+    else 
+        printf("Failed deleted flight with id of: \"%s\"\r\n", flightId);
 }

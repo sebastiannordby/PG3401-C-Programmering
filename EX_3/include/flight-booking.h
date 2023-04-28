@@ -43,9 +43,7 @@ typedef struct FlightList {
     struct Flight *tail;
 } FlightList;
 
-/*
-    Adds a flight to the list flightList.
-*/
+// Adds a flight to the list flightList.
 Flight* addFlight(
     FlightList *pFlightList, 
     char flightId[FLIGHT_ID_MAX_LENGTH], 
@@ -53,48 +51,48 @@ Flight* addFlight(
     unsigned short numberOfSeats, 
     unsigned short departureTime);
 
-/*
-    Returns the flight with the given id.
-*/
+// Finds a flight with the given id.
 Flight* getFlightById(
     FlightList *pFlightList, 
     char flightId[FLIGHT_ID_MAX_LENGTH]);
 
+// Finds a flight by index.
 Flight* getFlightByIndex(
     FlightList *pFlightList,
     unsigned short index);
 
-/*
-    Adds a passenger to the given flight.
-    If requestesSeatNumber is -1, automatically "allocate" seat.
-*/
+// Finds a flight by departure time.
+Flight* getFlightByDepartureTime(
+    FlightList *pFlightList,
+    unsigned short time);
+
+// Adds a passenger to the given flight.
 bool addPassenger(
     Flight *pFlightList, 
     unsigned short requestedSeatNumber, 
     char name[PASSENGER_NAME_MAX_LENGTH], 
     unsigned short age);
 
-/*
-    Prints out a formated flight list.
-*/
-void printFlightList(
-    const FlightList *pflightList);
-
-/*
-    Prints out a formated passenger list 
-    for the given flight.
-*/
-void printPassengerList(
-    const Flight *flight);
-
-void printFlight(
-    const Flight *flight);
-
-/*
-    Returns an array of available seats, and the size of the array.
-*/
+// Returns an array of available seats, and the size of the array.
 int* getAvailableSeats(
     const Flight *pFlight, 
     unsigned short *size);
+
+// Removes a flight from the flightlist.
+bool deleteFlight(
+    FlightList *pFlightList, 
+    char flightId[FLIGHT_ID_MAX_LENGTH]);
+
+//Prints out a formated flight list.
+void printFlightList(
+    const FlightList *pFlightList);
+
+// Prints out a formated passenger list for the given flight.
+void printPassengerList(
+    const Flight *pFlight);
+
+// Print out a single flight
+void printFlight(
+    const Flight *pFlight);
 
 #endif
