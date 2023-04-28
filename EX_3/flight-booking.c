@@ -419,15 +419,3 @@ Flight* getFlightByDepartureTime(FlightList *pFlightList, unsigned short time) {
 
     return currentFlight;
 }
-
-
-// int* getAvailableSeats(const Flight *flight, unsigned short *size) {
-//     int *result = malloc(sizeof(int) * flight->numberOfSeats);
-
-//     if(flight->pPassengers == NULL) { 
-
-//     }
-
-//     return NULL;
-// }
-
