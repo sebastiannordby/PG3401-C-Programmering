@@ -84,6 +84,12 @@ bool removePassenger(
     char flightId[FLIGHT_ID_MAX_LENGTH],
     unsigned short seatNumber);
 
+bool changeSeat(
+    FlightList *pFlightList,
+    char flightId[FLIGHT_ID_MAX_LENGTH],
+    unsigned short currentSeatNumber,
+    unsigned short requestedSeatNumber);
+
 // Returns an array of available seats, and the size of the array.
 int* getAvailableSeats(
     const Flight *pFlight, 

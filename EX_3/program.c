@@ -32,6 +32,7 @@ void promptSearchPassenger(FlightList *flightList);
 void freeFlightList(FlightList *flightList);
 void readString(char *str, int maxLength);
 void usePredefinedData(FlightList *flightList);
+void printFailedInput(char *inputName);
 
 int main(int argc, char *argv[]) {
     FlightList *flightList = malloc(sizeof(FlightList));
@@ -143,14 +144,14 @@ void promptAddFlight(FlightList *flightList) {
     unsigned short numberOfSeats;
     printf("Enter number of seats: ");
     if(scanf("%hu", &numberOfSeats) != 1) {
-        printf("Unable to read number of seats.\r\n");
+        printFailedInput("number of seats");
         return;
     }
 
     unsigned short departureTime;
     printf("Enter departure time: ");
     if(scanf("%hu", &departureTime) != 1) {
-        printf("Unable to read departure time.\r\n");
+        printFailedInput("departure time");
         return;
     }
 
@@ -184,14 +185,14 @@ void promptAddPassenger(FlightList *flightList) {
     unsigned short age;
     printf("Enter age: ");
     if(scanf("%hu", &age) != 1) {
-        printf("Unable to read age.\r\n");
+        printFailedInput("age");
         return;
     }
 
     unsigned short seatNumber;
     printf("Enter seat number(-1 for automatic allocation): ");
     if(scanf("%hu", &seatNumber) != 1) {
-        printf("Unable to read seatnumber.\r\n");
+        printFailedInput("seatnumber");
         return;
     }
 
@@ -245,7 +246,7 @@ void promptFindFlightByIndex(FlightList *flightList) {
     printf("Enter index: ");
     unsigned short index;
     if(scanf("%hu", &index) != 1) {
-        printf("An error occured inputing index.");
+        printFailedInput("index");
         return;
     }
 
@@ -262,7 +263,7 @@ void promptFindFlightByDepartureTime(FlightList *flightList) {
     printf("Enter departure: ");
     unsigned short departureTime;
     if(scanf("%hu", &departureTime) != 1) {
-        printf("An error occured inputing departure time.");
+        printFailedInput("departure time");
         return;
     }
 
@@ -299,7 +300,7 @@ void promptRemovePassengerRes(FlightList *flightList) {
     unsigned short seatNumber;
     printf("Enter seat number: ");
     if(scanf("%hu", &seatNumber) != 1) {
-        printf("Unable to read seatnumber.\r\n");
+        printFailedInput("seatnumber");
         return;
     }
 
@@ -309,14 +310,37 @@ void promptRemovePassengerRes(FlightList *flightList) {
         printf("Failed to delete passenger reservation.\r\n");
 }
 
-void promptChangePassengerSeat(FlightList *flightList) {
+void printFailedInput(char *inputName) {
+    printf("An error occured inputing %s\r\n", inputName);
+}
+
+void promptChangePassengerSeat(FlightList *pFlightList) {
     printMenuHeader("CHANGE PASSENGER SEAT");
 
     char flightId[FLIGHT_ID_MAX_LENGTH];
     printf("Enter flight id: ");
     readString(flightId, FLIGHT_ID_MAX_LENGTH);
 
-    
+    printf("Enter current seat number: ");
+    unsigned short currentSeatNumber;
+    if(scanf("%hu", &currentSeatNumber) != 1) {
+        printFailedInput("current seat number");
+        return;
+    }
+
+    printf("Enter requested seat number: ");
+    unsigned short requestedSeatNumber;
+    if(scanf("%hu", &requestedSeatNumber) != 1) {
+        printFailedInput("current seat number");
+        return;
+    }
+
+    if(changeSeat(pFlightList, flightId, currentSeatNumber, requestedSeatNumber)) 
+        printf("Successfully changed seat from \"%hu\" to \"%hu\"\r\n",
+            currentSeatNumber, requestedSeatNumber);
+    else 
+        printf("Unable to change seat from \"%hu\" to \"%hu\"\r\n", 
+            currentSeatNumber, requestedSeatNumber);
 }
 
 void usePredefinedData(FlightList *flightList) {
