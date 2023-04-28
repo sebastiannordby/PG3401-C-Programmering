@@ -8,9 +8,10 @@
     Prints out a flight in the following format:
     Id: @ Destination: @ Depature: @
 */
-void printFlight(Flight *flight) {
-    printf("%-10s| %-50s| %d\r\n", 
-        flight->flightID, flight->destination, flight->departureTime);
+void printFlight(const Flight *flight) {
+    printf("%-10s| %-50s| %-10d | %-10d\r\n", 
+        flight->flightID, flight->destination, 
+        flight->departureTime, flight->numberOfSeats);
 }
 
 /*
@@ -19,22 +20,25 @@ void printFlight(Flight *flight) {
 */
 
 void printDottedLine(int length) {
-    for(int i = 0; i <= 10 + 50 + 10; i++) 
+    for(int i = 0; i <= length; i++) 
         putchar('-');
 
     putchar('\n');
 }
 
-void printFlightList(FlightList* flightList) {
-    printDottedLine(10 + 50 + 10);
-    printf("%-10s| %-50s| %-10s\r\n", "Id", "Destination", "Depature");
-    printDottedLine(10 + 50 + 10);
+void printFlightList(const FlightList* flightList) {
+    int numCharsDottedLine = 82;
+    printDottedLine(numCharsDottedLine);
+    printf("%-10s| %-50s| %-10s | %-10s\r\n", "Id", "Destination", "Depature", "Seats");
+    printDottedLine(numCharsDottedLine);
 
     Flight *currentFlight = flightList->head;
     while (currentFlight != NULL) {
         printFlight(currentFlight);
         currentFlight = currentFlight->next;
     }
+
+    printDottedLine(numCharsDottedLine);
 }
 
 /*
@@ -57,8 +61,8 @@ Flight* createFlight(char* flightID, char* destination, int numberOfSeats, int d
     Adds a flight to the flight list.
 
 */
-Flight* addFlight(FlightList* flightList, char* flightID, 
-    char* destination, int numberOfSeats, int departureTime) {
+Flight* addFlight(FlightList* flightList, char flightID[FLIGHT_ID_MAX_LENGTH], 
+    char destination[FLIGHT_DESTINATION_MAX_LENGTH], int numberOfSeats, int departureTime) {
     // Create the flight struct    
     Flight *newFlight = createFlight(flightID, destination, numberOfSeats, departureTime);
 
@@ -88,8 +92,27 @@ bool isSeatTaken(Passenger *p, int seatNumber) {
     return false;
 }
 
+/*
+    Returns the passenger closest to the seat number provided.
+*/
+Passenger* getPassengerClosestToSeatNumber(Flight *flight, int seatNumber) {
+    Passenger *currentPassenger = flight->passengers;
+
+    while(currentPassenger != NULL && 
+        currentPassenger->seatNumber < seatNumber && 
+        currentPassenger->next != NULL) {
+        currentPassenger = currentPassenger->next;
+    }
+
+    return currentPassenger;
+}
+
+/*
+    Adds a passenger to the given flight.
+    If the requstedSeatNumber is -1, take the first available.
+*/
 bool addPassenger(Flight *flight, int requestedSeatNumber, 
-    char name[PASSENGER_MAX_NAME], int age) {
+    char name[PASSENGER_NAME_MAX_LENGTH], int age) {
     
     // Check if arguments passed is valid
     if(flight == NULL || name == NULL || age < 0)
@@ -102,21 +125,31 @@ bool addPassenger(Flight *flight, int requestedSeatNumber,
 
     if(flight->passengers == NULL) {
         flight->passengers = newPassenger;
-    } else {
-        Passenger *currentPassenger = flight->passengers;
-
-        while(currentPassenger != NULL && 
-            currentPassenger->seatNumber < requestedSeatNumber && 
-            currentPassenger->next != NULL) {
-            currentPassenger = currentPassenger->next;
-        }
+    } else if(requestedSeatNumber > 0) {
+        Passenger *closestPassenger = getPassengerClosestToSeatNumber(
+            flight, requestedSeatNumber);
 
         // Tried to use an existing seatnumber
-        if(isSeatTaken(currentPassenger, requestedSeatNumber)) {
+        if(isSeatTaken(closestPassenger, requestedSeatNumber)) {
             printf("Seat: %d is already taken.\r\n", requestedSeatNumber);
             free(newPassenger);
             newPassenger = NULL;
             return false;
+        }
+
+        newPassenger->next = closestPassenger->next;
+        closestPassenger->next = newPassenger;
+    } else {
+        Passenger *currentPassenger = flight->passengers;
+
+        while(currentPassenger != NULL && 
+            currentPassenger->next != NULL) {
+            currentPassenger = currentPassenger->next;
+        }
+
+        if(currentPassenger->next == NULL && 
+            currentPassenger->seatNumber + 1 < flight->numberOfSeats) {
+            newPassenger->seatNumber = currentPassenger->seatNumber + 1;
         }
 
         newPassenger->next = currentPassenger->next;
@@ -127,7 +160,7 @@ bool addPassenger(Flight *flight, int requestedSeatNumber,
 }
 
 
-void printPassengerList(Flight *flight) {
+void printPassengerList(const Flight *flight) {
     if(flight == NULL || flight->passengers == NULL)
         return;
 
