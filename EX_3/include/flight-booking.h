@@ -1,17 +1,19 @@
 #ifndef __FLIGHT_BOOKING_H__
 #define __FLIGHT_BOOKING_H__
+
+#include <stdbool.h>
 #define PASSENGER_NAME_MAX_LENGTH 100
 #define FLIGHT_ID_MAX_LENGTH 10
 #define FLIGHT_DESTINATION_MAX_LENGTH 50
-#include <stdbool.h>
+
 /*
-    struct representing a aassenger on a flight.
+    struct representing a passenger on a flight.
 */
 typedef struct Passenger {
-    int seatNumber;
+    unsigned short seatNumber;
     char name[PASSENGER_NAME_MAX_LENGTH];
-    int age;
-    struct Passenger *next;
+    unsigned short age;
+    struct Passenger *pNext;
 } Passenger;
 
 /*
@@ -25,11 +27,11 @@ typedef struct Passenger {
 typedef struct Flight {
     char flightID[10];
     char destination[50];
-    int numberOfSeats;
-    int departureTime;
-    struct Flight *next;
-    struct Flight *prev;
-    struct Passenger *passengers;
+    unsigned short numberOfSeats;
+    unsigned short departureTime;
+    struct Flight *pNext;
+    struct Flight *pPrev;
+    struct Passenger *pPassengers;
 } Flight;
 
 /*
@@ -42,17 +44,53 @@ typedef struct FlightList {
 } FlightList;
 
 /*
-    Adds a flight to the list.
+    Adds a flight to the list flightList.
 */
+Flight* addFlight(
+    FlightList *pFlightList, 
+    char flightId[FLIGHT_ID_MAX_LENGTH], 
+    char destination[FLIGHT_DESTINATION_MAX_LENGTH], 
+    unsigned short numberOfSeats, 
+    unsigned short departureTime);
 
-Flight* addFlight(FlightList* flightList, char flightId[FLIGHT_ID_MAX_LENGTH], 
-    char destination[FLIGHT_DESTINATION_MAX_LENGTH], int numberOfSeats, int departureTime);
+/*
+    Returns the flight with the given id.
+*/
+Flight* getFlightById(
+    FlightList *pFlightList, 
+    char flightId[FLIGHT_ID_MAX_LENGTH]);
 
-bool addPassenger(Flight *flight, 
-    int seatNumber, char name[PASSENGER_NAME_MAX_LENGTH], int age);
+/*
+    Adds a passenger to the given flight.
+    If requestesSeatNumber is -1, automatically "allocate" seat.
+*/
+bool addPassenger(
+    Flight *pFlightList, 
+    unsigned short requestedSeatNumber, 
+    char name[PASSENGER_NAME_MAX_LENGTH], 
+    unsigned short age);
 
-void printFlightList(const FlightList *flightList);
-void printFlight(const Flight *flight);
-void printPassengerList(const Flight *flight);
+/*
+    Prints out a formated flight list.
+*/
+void printFlightList(
+    const FlightList *pflightList);
+
+/*
+    Prints out a formated passenger list 
+    for the given flight.
+*/
+void printPassengerList(
+    const Flight *flight);
+
+void printFlight(
+    const Flight *flight);
+
+/*
+    Returns an array of available seats, and the size of the array.
+*/
+int* getAvailableSeats(
+    const Flight *pFlight, 
+    unsigned short *size);
 
 #endif

@@ -1,0 +1,164 @@
+==87880== Memcheck, a memory error detector
+==87880== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==87880== Using Valgrind-3.18.1-42b08ed5bd-20211015 and LibVEX; rerun with -h for copyright info
+==87880== Command: ./booking-system
+==87880== Parent PID: 4215
+==87880== 
+--87880-- 
+--87880-- Valgrind options:
+--87880--    --leak-check=full
+--87880--    --show-leak-kinds=all
+--87880--    --track-origins=yes
+--87880--    --verbose
+--87880--    --log-file=valgrind-out.txt
+--87880-- Contents of /proc/version:
+--87880--   Linux version 5.19.0-38-generic (buildd@lcy02-amd64-001) (x86_64-linux-gnu-gcc (Ubuntu 11.3.0-1ubuntu1~22.04) 11.3.0, GNU ld (GNU Binutils for Ubuntu) 2.38) #39~22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Fri Mar 17 21:16:15 UTC 2
+--87880-- 
+--87880-- Arch and hwcaps: AMD64, LittleEndian, amd64-cx16-lzcnt-rdtscp-sse3-ssse3-avx-avx2-bmi-f16c-rdrand-rdseed
+--87880-- Page sizes: currently 4096, max supported 4096
+--87880-- Valgrind library directory: /usr/libexec/valgrind
+--87880-- Reading syms from /home/cyllon/Desktop/c-exam/PG3401-C-Programmering/EX_3/booking-system
+--87880-- Reading syms from /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2
+--87880--   Considering /usr/lib/debug/.build-id/61/ef896a699bb1c2e4e231642b2e1688b2f1a61e.debug ..
+--87880--   .. build-id is valid
+--87880-- Reading syms from /usr/libexec/valgrind/memcheck-amd64-linux
+--87880--    object doesn't have a symbol table
+--87880--    object doesn't have a dynamic symbol table
+--87880-- Scheduler: using generic scheduler lock implementation.
+--87880-- Reading suppressions file: /usr/libexec/valgrind/default.supp
+==87880== embedded gdbserver: reading from /tmp/vgdb-pipe-from-vgdb-to-87880-by-cyllon-on-???
+==87880== embedded gdbserver: writing to   /tmp/vgdb-pipe-to-vgdb-from-87880-by-cyllon-on-???
+==87880== embedded gdbserver: shared mem   /tmp/vgdb-pipe-shared-mem-vgdb-87880-by-cyllon-on-???
+==87880== 
+==87880== TO CONTROL THIS PROCESS USING vgdb (which you probably
+==87880== don't want to do, unless you know exactly what you're doing,
+==87880== or are doing some strange experiment):
+==87880==   /usr/bin/vgdb --pid=87880 ...command...
+==87880== 
+==87880== TO DEBUG THIS PROCESS USING GDB: start GDB like this
+==87880==   /path/to/gdb ./booking-system
+==87880== and then give GDB the following command
+==87880==   target remote | /usr/bin/vgdb --pid=87880
+==87880== --pid is optional if only one valgrind process is running
+==87880== 
+--87880-- REDIR: 0x402aa60 (ld-linux-x86-64.so.2:strlen) redirected to 0x580bcec2 (???)
+--87880-- REDIR: 0x402a830 (ld-linux-x86-64.so.2:index) redirected to 0x580bcedc (???)
+--87880-- Reading syms from /usr/libexec/valgrind/vgpreload_core-amd64-linux.so
+--87880--    object doesn't have a symbol table
+--87880-- Reading syms from /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so
+--87880--    object doesn't have a symbol table
+==87880== WARNING: new redirection conflicts with existing -- ignoring it
+--87880--     old: 0x0402aa60 (strlen              ) R-> (0000.0) 0x580bcec2 ???
+--87880--     new: 0x0402aa60 (strlen              ) R-> (2007.0) 0x0484ee30 strlen
+--87880-- REDIR: 0x4027240 (ld-linux-x86-64.so.2:strcmp) redirected to 0x484fcd0 (strcmp)
+--87880-- REDIR: 0x402afc0 (ld-linux-x86-64.so.2:mempcpy) redirected to 0x4853840 (mempcpy)
+--87880-- Reading syms from /usr/lib/x86_64-linux-gnu/libc.so.6
+--87880--   Considering /usr/lib/debug/.build-id/69/389d485a9793dbe873f0ea2c93e02efaa9aa3d.debug ..
+--87880--   .. build-id is valid
+==87880== WARNING: new redirection conflicts with existing -- ignoring it
+--87880--     old: 0x0490fce0 (memalign            ) R-> (1011.0) 0x0484e080 memalign
+--87880--     new: 0x0490fce0 (memalign            ) R-> (1017.0) 0x0484e050 aligned_alloc
+==87880== WARNING: new redirection conflicts with existing -- ignoring it
+--87880--     old: 0x0490fce0 (memalign            ) R-> (1011.0) 0x0484e080 memalign
+--87880--     new: 0x0490fce0 (memalign            ) R-> (1017.0) 0x0484e020 aligned_alloc
+==87880== WARNING: new redirection conflicts with existing -- ignoring it
+--87880--     old: 0x0490fce0 (memalign            ) R-> (1011.0) 0x0484e080 memalign
+--87880--     new: 0x0490fce0 (memalign            ) R-> (1017.0) 0x0484e050 aligned_alloc
+==87880== WARNING: new redirection conflicts with existing -- ignoring it
+--87880--     old: 0x0490fce0 (memalign            ) R-> (1011.0) 0x0484e080 memalign
+--87880--     new: 0x0490fce0 (memalign            ) R-> (1017.0) 0x0484e020 aligned_alloc
+--87880-- REDIR: 0x49127a0 (libc.so.6:strnlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4912a60 (libc.so.6:strpbrk) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4912360 (libc.so.6:strcmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4930d50 (libc.so.6:wcsnlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4913750 (libc.so.6:memset) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x492f5c0 (libc.so.6:wcslen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4913c90 (libc.so.6:memcpy@@GLIBC_2.14) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x492f3f0 (libc.so.6:wcschr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x49122e0 (libc.so.6:index) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x49129e0 (libc.so.6:rindex) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4913620 (libc.so.6:memmove) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+==87880== Preferring higher priority redirection:
+--87880--     old: 0x04a0a940 (__memcpy_avx_unalign) R-> (2018.0) 0x04850f90 __memcpy_avx_unaligned_erms
+--87880--     new: 0x04a0a940 (__memcpy_avx_unalign) R-> (2018.1) 0x04852880 memmove
+--87880-- REDIR: 0x492f470 (libc.so.6:wcscmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4913a60 (libc.so.6:stpncpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x492fa30 (libc.so.6:wmemchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x49128b0 (libc.so.6:strncmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4913af0 (libc.so.6:strcasecmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x49124a0 (libc.so.6:strcspn) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x492f4f0 (libc.so.6:wcscpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4912250 (libc.so.6:strcat) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4913be0 (libc.so.6:strncasecmp_l) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4913500 (libc.so.6:bcmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x491b5f0 (libc.so.6:memrchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4915090 (libc.so.6:strchrnul) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4912410 (libc.so.6:strcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4913b90 (libc.so.6:strcasecmp_l) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4912720 (libc.so.6:strlen) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4912950 (libc.so.6:strncpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x49139d0 (libc.so.6:stpcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4913470 (libc.so.6:memchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4912b80 (libc.so.6:strspn) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4913850 (libc.so.6:mempcpy) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4913b40 (libc.so.6:strncasecmp) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4915000 (libc.so.6:rawmemchr) redirected to 0x483f220 (_vgnU_ifunc_wrapper)
+--87880-- REDIR: 0x4a07790 (libc.so.6:__strrchr_avx2) redirected to 0x484e810 (rindex)
+--87880-- REDIR: 0x490f120 (libc.so.6:malloc) redirected to 0x4848820 (malloc)
+--87880-- REDIR: 0x4a07960 (libc.so.6:__strlen_avx2) redirected to 0x484ed10 (strlen)
+--87880-- REDIR: 0x4a07580 (libc.so.6:__strchrnul_avx2) redirected to 0x4853330 (strchrnul)
+--87880-- REDIR: 0x4a0a900 (libc.so.6:__mempcpy_avx_unaligned_erms) redirected to 0x4853440 (mempcpy)
+--87880-- REDIR: 0x4a091c0 (libc.so.6:__strncpy_avx2) redirected to 0x484efe0 (strncpy)
+==87880== Conditional jump or move depends on uninitialised value(s)
+==87880==    at 0x109A2B: addFlight (in /home/cyllon/Desktop/c-exam/PG3401-C-Programmering/EX_3/booking-system)
+==87880==    by 0x1095BE: promptAddFlight (in /home/cyllon/Desktop/c-exam/PG3401-C-Programmering/EX_3/booking-system)
+==87880==    by 0x109207: main (in /home/cyllon/Desktop/c-exam/PG3401-C-Programmering/EX_3/booking-system)
+==87880==  Uninitialised value was created by a heap allocation
+==87880==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==87880==    by 0x109187: main (in /home/cyllon/Desktop/c-exam/PG3401-C-Programmering/EX_3/booking-system)
+==87880== 
+--87880-- REDIR: 0x4a02ac0 (libc.so.6:__strcmp_avx2) redirected to 0x484fbd0 (strcmp)
+--87880-- REDIR: 0x490f460 (libc.so.6:free) redirected to 0x484b210 (free)
+==87880== 
+==87880== HEAP SUMMARY:
+==87880==     in use at exit: 216 bytes in 3 blocks
+==87880==   total heap usage: 5 allocs, 2 frees, 2,264 bytes allocated
+==87880== 
+==87880== Searching for pointers to 3 not-freed blocks
+==87880== Checked 107,280 bytes
+==87880== 
+==87880== 88 bytes in 1 blocks are indirectly lost in loss record 1 of 3
+==87880==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==87880==    by 0x1099DA: addFlight (in /home/cyllon/Desktop/c-exam/PG3401-C-Programmering/EX_3/booking-system)
+==87880==    by 0x1095BE: promptAddFlight (in /home/cyllon/Desktop/c-exam/PG3401-C-Programmering/EX_3/booking-system)
+==87880==    by 0x109207: main (in /home/cyllon/Desktop/c-exam/PG3401-C-Programmering/EX_3/booking-system)
+==87880== 
+==87880== 112 bytes in 1 blocks are indirectly lost in loss record 2 of 3
+==87880==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==87880==    by 0x109B16: addPassenger (in /home/cyllon/Desktop/c-exam/PG3401-C-Programmering/EX_3/booking-system)
+==87880==    by 0x109724: promptAddPassenger (in /home/cyllon/Desktop/c-exam/PG3401-C-Programmering/EX_3/booking-system)
+==87880==    by 0x1091F5: main (in /home/cyllon/Desktop/c-exam/PG3401-C-Programmering/EX_3/booking-system)
+==87880== 
+==87880== 216 (16 direct, 200 indirect) bytes in 1 blocks are definitely lost in loss record 3 of 3
+==87880==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==87880==    by 0x109187: main (in /home/cyllon/Desktop/c-exam/PG3401-C-Programmering/EX_3/booking-system)
+==87880== 
+==87880== LEAK SUMMARY:
+==87880==    definitely lost: 16 bytes in 1 blocks
+==87880==    indirectly lost: 200 bytes in 2 blocks
+==87880==      possibly lost: 0 bytes in 0 blocks
+==87880==    still reachable: 0 bytes in 0 blocks
+==87880==         suppressed: 0 bytes in 0 blocks
+==87880== 
+==87880== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
+==87880== 
+==87880== 1 errors in context 1 of 2:
+==87880== Conditional jump or move depends on uninitialised value(s)
+==87880==    at 0x109A2B: addFlight (in /home/cyllon/Desktop/c-exam/PG3401-C-Programmering/EX_3/booking-system)
+==87880==    by 0x1095BE: promptAddFlight (in /home/cyllon/Desktop/c-exam/PG3401-C-Programmering/EX_3/booking-system)
+==87880==    by 0x109207: main (in /home/cyllon/Desktop/c-exam/PG3401-C-Programmering/EX_3/booking-system)
+==87880==  Uninitialised value was created by a heap allocation
+==87880==    at 0x4848899: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+==87880==    by 0x109187: main (in /home/cyllon/Desktop/c-exam/PG3401-C-Programmering/EX_3/booking-system)
+==87880== 
+==87880== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)

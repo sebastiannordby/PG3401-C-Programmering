@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#define STRINGIFY(x) #x
 
 const unsigned short MN_ADD_FLIGHT = 1;
 const unsigned short MN_ADD_PASSENGER = 2;
@@ -16,43 +17,15 @@ const unsigned short MN_EXIT_PROGRAM = 9;
 int readMenuChoice(void);
 void printMenu(void);
 void promptAddFlight(FlightList *flightList);
-void promptAddPassenger(void);
-void promptPrintFlight(void);
-void promptFindFlightByTime(void);
-void promptDeleteFlight(void);
-void promptRemovePassengerRes(void);
-void promptChangePassengerSeat(void);
-void promptSearchPassenger(void);
-
-void promptAddFlight(FlightList *flightList) {
-    printf("---------- Add flight ----------\r\n");
-
-    char flightId[FLIGHT_ID_MAX_LENGTH];
-    printf("Enter id: ");
-    int flightIdRes = scanf("%s", flightId);
-
-    char destination[FLIGHT_DESTINATION_MAX_LENGTH];
-    printf("Enter destination: ");
-    int destinationRes = scanf("%s", destination);
-
-    int numberOfSeats;
-    printf("Enter number of seats: ");
-    int numberOfSeatsRes = scanf("%d", &numberOfSeats);
-
-    int departureTime;
-    printf("Enter departure time: ");
-    int departureTimeRes = scanf("%d", &departureTime);
-
-    Flight *flight = addFlight(flightList, flightId, destination, numberOfSeats, departureTime);
-
-    if(flight != NULL) {
-        printf("Successfully created flight \"%s\"\r\n", flightId);
-        printf("Here is the updated flight list:\r\n");
-        printFlightList(flightList);
-        printf("\r\n");
-    }
-}
-
+void promptAddPassenger(FlightList *flightList);
+void promptPrintFlight(FlightList *flightList);
+void promptFindFlightByTime(FlightList *flightList);
+void promptDeleteFlight(FlightList *flightList);
+void promptRemovePassengerRes(FlightList *flightList);
+void promptChangePassengerSeat(FlightList *flightList);
+void promptSearchPassenger(FlightList *flightList);
+void freeFlightList(FlightList *flightList);
+void readString(char *str, int maxLength);
 
 int main(void) {
     FlightList *flightList = malloc(sizeof(FlightList));
@@ -68,12 +41,12 @@ int main(void) {
             case MN_ADD_FLIGHT:
                 promptAddFlight(flightList);
                 break;
-            // case MN_ADD_PASSENGER:
-            //     promptAddPassenger();
-            //     break;
-            // case MN_PRINT_FLIGHT:
-            //     promptPrintFlight();
-            //     break;
+            case MN_ADD_PASSENGER:
+                promptAddPassenger(flightList);
+                break;
+            case MN_PRINT_FLIGHT:
+                promptPrintFlight();
+                break;
             // case MN_FIND_FLIGHT_BY_TIME:
             //     promptFindFlightByTime();
             //     break;
@@ -92,11 +65,11 @@ int main(void) {
         }
     }
 
+    freeFlightList(flightList);
     printf("\r\nProgram exited. You can now close the terminal.\r\n");
 
     return 0;
 }
-
 
 void printMenu(void) {
     printf("----------- Menu -----------\r\n");
@@ -113,35 +86,125 @@ void printMenu(void) {
 
 int readMenuChoice() {
     printMenu();
-    printf("booking$ ");
+    printf("booking> ");
     int choice;
     int scanFRes = scanf("%d", &choice);
+    getchar();
 
     return scanFRes != EOF ? choice : EOF;
 }
 
-// int main(void) {
-//     FlightList *flightList = malloc(sizeof(FlightList));
-//     if(flightList == NULL) {
-//         printf("Could not create flight list.\r\n");
-//         return 1;
-//     }
+void printMenuHeader(char *text) {
+    printf("---------- %s ----------\r\n", text);
+}
 
-//     Flight* f1 = addFlight(flightList, "S8993", "Oslo Lufthavn", 22, 1020);
-//     Flight* f2 = addFlight(flightList, "Z2938", "Gdansk", 22, 1020);
-//     Flight* f3 = addFlight(flightList, "G2938", "Alanya", 22, 1020);
-//     Flight* f4 = addFlight(flightList, "D2938", "Copenhagen", 22, 1020);
+void readString(char *str, int maxLength) {
+    int current, counter = 0;
 
-//     printFlightList(flightList);
+    while(counter < maxLength && (current = getchar()) != '\n') {
+        str[counter] = current;
+        counter++;
+    }
 
-//     printf("\r\nAdding passengers\r\n");
+    str[counter] = '\0';
+}
 
-//     addPassenger(f1, 1, "Ola Normann\0", 25);
-//     addPassenger(f1, 2, "Heidi Olsen\0", 23);
-//     addPassenger(f1, -1, "Erik Jenssen\0", 23);
+void promptAddFlight(FlightList *flightList) {
+    printMenuHeader("Add flight");
 
-//     printPassengerList(f1);
+    char flightId[FLIGHT_ID_MAX_LENGTH];
+    printf("Enter id: ");
+    readString(flightId, FLIGHT_ID_MAX_LENGTH);
 
-//     return 0;
-// }
+    char destination[FLIGHT_DESTINATION_MAX_LENGTH];
+    printf("Enter destination: ");
+    readString(destination, FLIGHT_DESTINATION_MAX_LENGTH);
 
+    unsigned short numberOfSeats;
+    printf("Enter number of seats: ");
+    int numberOfSeatsRes = scanf("%hu", &numberOfSeats);
+
+    unsigned short departureTime;
+    printf("Enter departure time: ");
+    int departureTimeRes = scanf("%hu", &departureTime);
+
+    Flight *flight = addFlight(flightList, flightId, destination, numberOfSeats, departureTime);
+
+    if(flight != NULL) {
+        printf("Successfully created flight \"%s\"\r\n", flightId);
+        printf("Here is the updated flight list:\r\n");
+        printFlightList(flightList);
+        printf("\r\n");
+    }
+}
+
+void promptAddPassenger(FlightList *flightList) {
+    printMenuHeader("Add passenger to a flight");
+
+    char flightId[FLIGHT_ID_MAX_LENGTH];
+    printf("Enter flight id: ");
+    readString(flightId, FLIGHT_ID_MAX_LENGTH);
+
+    Flight* flight = getFlightById(flightList, flightId);
+    if(flight == NULL) {
+        printf("No flight with id of: %s\r\n", flightId);
+        return;
+    }
+
+    char name[PASSENGER_NAME_MAX_LENGTH];
+    printf("Enter name: ");
+    readString(name, PASSENGER_NAME_MAX_LENGTH);
+
+    unsigned short age;
+    printf("Enter age: ");
+    int ageRes = scanf("%hu", &age);
+
+    unsigned short seatNumber;
+    printf("Enter seat number(-1 for automatic allocation): ");
+    int seatNumberRes = scanf("%hu", &seatNumber);
+
+    if(ageRes == EOF || seatNumberRes == EOF) {
+        printf("Could not continue the registation of passenger.");
+        return;
+    }
+
+    if(addPassenger(flight, seatNumber, name, age)) {
+        printf("Successfully added passenger \"%s\" to flight \"%s\"\r\n", 
+            flightId, name);
+    } else {
+        printf("Could not add passenger to flight.");
+    }
+}
+
+void freeFlightList(FlightList *flightList) {
+    Flight *pFlight = flightList->head;
+
+    while (pFlight != NULL) {
+        Passenger *pPassenger = pFlight->pPassengers;
+
+        while (pPassenger != NULL) {
+            Passenger *pPassengerTemp = pPassenger;
+            pPassenger = pPassenger->pNext;
+            free(pPassengerTemp);
+        }
+    
+        Flight *pTempFlight = pFlight;
+        pFlight = pFlight->pNext;
+        free(pTempFlight);
+    }
+
+    free(flightList);
+    flightList = NULL;
+}
+
+void promptPrintFlight(FlightList *flightList) {
+    char flightId[FLIGHT_ID_MAX_LENGTH];
+    printf("Enter flight id: ");
+    readString(flightId, FLIGHT_ID_MAX_LENGTH);
+
+    Flight* flight = getFlightById(flightList, flightId);
+    if(flight == NULL) {
+        printf("No flight with id of: %s\r\n", flightId);
+        return;
+    }
+}
