@@ -51,6 +51,11 @@ Flight* addFlight(
     unsigned short numberOfSeats, 
     unsigned short departureTime);
 
+// Removes a flight from the flightlist.
+bool deleteFlight(
+    FlightList *pFlightList, 
+    char flightId[FLIGHT_ID_MAX_LENGTH]);
+
 // Finds a flight with the given id.
 Flight* getFlightById(
     FlightList *pFlightList, 
@@ -73,15 +78,15 @@ bool addPassenger(
     char name[PASSENGER_NAME_MAX_LENGTH], 
     unsigned short age);
 
+// Removes a passenger from the given flight.
+bool removePassenger(
+    char flightId[FLIGHT_ID_MAX_LENGTH],
+    unsigned short seatNumber);
+
 // Returns an array of available seats, and the size of the array.
 int* getAvailableSeats(
     const Flight *pFlight, 
     unsigned short *size);
-
-// Removes a flight from the flightlist.
-bool deleteFlight(
-    FlightList *pFlightList, 
-    char flightId[FLIGHT_ID_MAX_LENGTH]);
 
 //Prints out a formated flight list.
 void printFlightList(

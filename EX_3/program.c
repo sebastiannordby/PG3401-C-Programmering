@@ -244,7 +244,7 @@ void usePredefinedData(FlightList *flightList) {
     char f3Id[FLIGHT_ID_MAX_LENGTH] = "AYA1234\0";
     char f3Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Alanya International\0";
     char f4Id[FLIGHT_ID_MAX_LENGTH] = "CHN1234\0";
-    char f4Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Oslo Lufthavn\0";
+    char f4Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Copenhagen\0";
     char f5Id[FLIGHT_ID_MAX_LENGTH] = "STC1234\0";
     char f5Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Stockholm Airport\0";
     char f6Id[FLIGHT_ID_MAX_LENGTH] = "TEN1234\0";
@@ -331,5 +331,5 @@ void promptDeleteFlight(FlightList *pFlightList) {
     if(deleteFlight(pFlightList, flightId)) 
         printf("Successfully deleted flight \"%s\"\r\n", flightId);
     else 
-        printf("Failed deleted flight with id of: \"%s\"\r\n", flightId);
+        printf("Failed to delete flight with id of: \"%s\"\r\n", flightId);
 }
