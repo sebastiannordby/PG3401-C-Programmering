@@ -1,4 +1,4 @@
-#include "flight-booking.h"
+#include "include/flight-booking.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -75,9 +75,7 @@ int main(int argc, char *argv[]) {
             case MN_CHANGE_PASSENGER_SEAT:
                 promptChangePassengerSeat(flightList);
                 break;
-            // case MN_SEARCH_PASSENGER:
-            //     promptSearchPassenger();
-            //     break;
+
             case MN_PRINT_ALL_FLIGHTS:
                 printFlightList(flightList);
                 break;
@@ -335,7 +333,7 @@ void promptChangePassengerSeat(FlightList *pFlightList) {
         return;
     }
 
-    if(changeSeat(pFlightList, flightId, currentSeatNumber, requestedSeatNumber)) 
+    if(changePassengerSeat(pFlightList, flightId, currentSeatNumber, requestedSeatNumber)) 
         printf("Successfully changed seat from \"%hu\" to \"%hu\"\r\n",
             currentSeatNumber, requestedSeatNumber);
     else 
@@ -343,7 +341,7 @@ void promptChangePassengerSeat(FlightList *pFlightList) {
             currentSeatNumber, requestedSeatNumber);
 }
 
-void usePredefinedData(FlightList *flightList) {
+void usePredefinedData(FlightList *pFlightList) {
     printf("Using predefined data..\r\n");
 
     printf("Adding flights...\r\n");
@@ -361,35 +359,38 @@ void usePredefinedData(FlightList *flightList) {
     char f6Id[FLIGHT_ID_MAX_LENGTH] = "TEN1234\0";
     char f6Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Tenerife Intr Airport\0";
 
-    Flight* f1 = addFlight(flightList, f1Id, f1Dest, 22, 820);
-    Flight* f2 = addFlight(flightList, f2Id, f2Dest, 22, 1020);
-    Flight* f3 = addFlight(flightList, f3Id, f3Dest, 22, 1120);
-    Flight* f4 = addFlight(flightList, f4Id, f4Dest, 22, 1220);
-    Flight* f5 = addFlight(flightList, f5Id, f5Dest, 22, 1320);
-    Flight* f6 = addFlight(flightList, f6Id, f6Dest, 22, 1420);
+    Flight* f1 = addFlight(pFlightList, f1Id, f1Dest, 22, 820);
+    Flight* f2 = addFlight(pFlightList, f2Id, f2Dest, 22, 1020);
+    Flight* f3 = addFlight(pFlightList, f3Id, f3Dest, 22, 1120);
+    Flight* f4 = addFlight(pFlightList, f4Id, f4Dest, 22, 1220);
+    Flight* f5 = addFlight(pFlightList, f5Id, f5Dest, 22, 1320);
+    Flight* f6 = addFlight(pFlightList, f6Id, f6Dest, 22, 1420);
 
     printf("Adding passengers\r\n");
 
-    char f1P1Name[PASSENGER_NAME_MAX_LENGTH] = "Dennis MacAlistair Ritchie\0";
-    char f1P2Name[PASSENGER_NAME_MAX_LENGTH] = "Aaron Swartz\0";
-    char f1P3Name[PASSENGER_NAME_MAX_LENGTH] = "Linus Thorvalds\0";
+    char f1P1Name[PASSENGER_NAME_MAX_LENGTH] = "Dennis MacAlistair Ritchie";
+    char f1P2Name[PASSENGER_NAME_MAX_LENGTH] = "Aaron Swartz";
+    char f1P3Name[PASSENGER_NAME_MAX_LENGTH] = "Linus Thorvalds";
     addPassenger(f1, 0, f1P1Name, 55);
     addPassenger(f1, 0, f1P2Name, 23);
     addPassenger(f1, 0, f1P3Name, 56);
 
-    char f2P1Name[PASSENGER_NAME_MAX_LENGTH] = "Alan Turing\0";
-    char f2P2Name[PASSENGER_NAME_MAX_LENGTH] = "Bill Gates\0";
-    char f2P3Name[PASSENGER_NAME_MAX_LENGTH] = "Linus Thorvalds\0";
+    char f2P1Name[PASSENGER_NAME_MAX_LENGTH] = "Alan Turing";
+    char f2P2Name[PASSENGER_NAME_MAX_LENGTH] = "Bill Gates";
+    char f2P3Name[PASSENGER_NAME_MAX_LENGTH] = "Linus Thorvalds";
     addPassenger(f2, 0, f2P1Name, 21);
     addPassenger(f2, 0, f2P2Name, 42);
     addPassenger(f2, 0, f2P3Name, 65);
 
-    char f6P1Name[PASSENGER_NAME_MAX_LENGTH] = "Tim Berners-Lee\0";
-    char f6P2Name[PASSENGER_NAME_MAX_LENGTH] = "James Gosling\0";
-    char f6P3Name[PASSENGER_NAME_MAX_LENGTH] = "Brian Kernighan\0";
-    addPassenger(f6, 0, f6P1Name, 21);
-    addPassenger(f6, 0, f6P2Name, 42);
-    addPassenger(f6, 0, f6P3Name, 88);
+    char f6P1Name[PASSENGER_NAME_MAX_LENGTH] = "Tim Berners-Lee";
+    char f6P2Name[PASSENGER_NAME_MAX_LENGTH] = "James Gosling";
+    char f6P3Name[PASSENGER_NAME_MAX_LENGTH] = "Brian Kernighan";
+    addPassenger(f6, 1, f6P1Name, 21);
+    addPassenger(f6, 2, f6P2Name, 42);
+    addPassenger(f6, 3, f6P3Name, 88);
+
+    printFlight(f6);
+    printFlight(f6);
 
     printf("Program now uses predefined data.\r\n");
 }

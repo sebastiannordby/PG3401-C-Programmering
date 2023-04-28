@@ -51,12 +51,12 @@ Flight* addFlight(
     unsigned short numberOfSeats, 
     unsigned short departureTime);
 
-// Removes a flight from the flightlist.
+// Removes a flight from flightlist.
 bool deleteFlight(
     FlightList *pFlightList, 
     char flightId[FLIGHT_ID_MAX_LENGTH]);
 
-// Finds a flight with the given id.
+// Finds a flight with given id.
 Flight* getFlightById(
     FlightList *pFlightList, 
     char flightId[FLIGHT_ID_MAX_LENGTH]);
@@ -71,20 +71,21 @@ Flight* getFlightByDepartureTime(
     FlightList *pFlightList,
     unsigned short time);
 
-// Adds a passenger to the given flight.
+// Adds a passenger to given flight.
 bool addPassenger(
     Flight *pFlightList, 
     unsigned short requestedSeatNumber, 
     char name[PASSENGER_NAME_MAX_LENGTH], 
     unsigned short age);
 
-// Removes a passenger from the given flight.
+// Removes a passenger from given flight.
 bool removePassenger(
     FlightList *pFlightList,
     char flightId[FLIGHT_ID_MAX_LENGTH],
     unsigned short seatNumber);
 
-bool changeSeat(
+// Changes seat for given passenger, on given flight.
+bool changePassengerSeat(
     FlightList *pFlightList,
     char flightId[FLIGHT_ID_MAX_LENGTH],
     unsigned short currentSeatNumber,
@@ -107,4 +108,7 @@ void printPassengerList(
 void printFlight(
     const Flight *pFlight);
 
+// Returns the number of accosiated flights by the passengers name.
+unsigned int getAssociatedFlightsByPassengerName(
+    char passengerName[PASSENGER_NAME_MAX_LENGTH]);
 #endif

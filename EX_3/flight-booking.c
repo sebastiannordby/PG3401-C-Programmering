@@ -1,4 +1,4 @@
-#include "flight-booking.h"
+#include "include/flight-booking.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
@@ -98,8 +98,8 @@ Flight* addFlight(
 
     // Create the flight struct    
     Flight* newFlight = malloc(sizeof(Flight));
-    strncpy(newFlight->flightID, flightID, sizeof(newFlight->flightID));
-    strncpy(newFlight->destination, destination, sizeof(newFlight->destination));
+    strcpy(newFlight->flightID, flightID);
+    strcpy(newFlight->destination, destination);
     newFlight->numberOfSeats = numberOfSeats;
     newFlight->departureTime = departureTime;
     newFlight->pNext = NULL;
@@ -214,7 +214,8 @@ bool addPassenger(Flight *pFlight, unsigned short requestedSeatNumber,
     Passenger *newPassenger = malloc(sizeof(Passenger));
     newPassenger->age = age;
     newPassenger->seatNumber = requestedSeatNumber != 0 ? requestedSeatNumber : 1;
-    strncpy(newPassenger->name, name, sizeof(newPassenger->name));
+    strcpy(newPassenger->name, name);
+    newPassenger->name[PASSENGER_NAME_MAX_LENGTH - 1] = '\0';
 
     if(pFlight->pPassengers == NULL) {
         pFlight->pPassengers = newPassenger;
@@ -284,8 +285,10 @@ bool removePassenger(
     return false;
 }
 
-bool changeSeat(FlightList *pFlightList, char flightId[FLIGHT_ID_MAX_LENGTH],
+
+bool changePassengerSeat(FlightList *pFlightList, char flightId[FLIGHT_ID_MAX_LENGTH],
     unsigned short currentSeatNumber, unsigned short requestedSeatNumber) {
+
     if(pFlightList == NULL || flightId == NULL)
         return false;
 
@@ -293,55 +296,61 @@ bool changeSeat(FlightList *pFlightList, char flightId[FLIGHT_ID_MAX_LENGTH],
     if(pFlight == NULL)
         return false;
 
-    // Check if number is available
-    Passenger *pCurrentPassenger = pFlight->pPassengers;
-    Passenger *pTargetedPassenger;
-    Passenger *pPassengerWithClosestNumber;
-    Passenger *pPrevTargetedPassenger;
-    bool seatAvailable = true;
+    Passenger *pPassengerList = pFlight->pPassengers;
 
-    // Checks if seat is available and looks up the targeted passenger 
-    // so the program dont have to go through the linked list more than neseccary.
-    while(pCurrentPassenger != NULL && seatAvailable) {
-        if(pCurrentPassenger->seatNumber == requestedSeatNumber) 
-            seatAvailable = false;
-
-        if(pCurrentPassenger->seatNumber == currentSeatNumber)
-            pTargetedPassenger = pCurrentPassenger;
-
-        if(pPassengerWithClosestNumber == NULL || 
-            pCurrentPassenger->seatNumber - requestedSeatNumber < 
-                pPassengerWithClosestNumber->seatNumber - requestedSeatNumber) 
-            pPassengerWithClosestNumber = pCurrentPassenger;
-
-        pPrevTargetedPassenger = pCurrentPassenger;
-        pCurrentPassenger = pCurrentPassenger->pNext;
+    // Find the passenger with the current seat number
+    Passenger *currentPassenger = pPassengerList;
+    while (currentPassenger != NULL && currentPassenger->seatNumber != currentSeatNumber) {
+        currentPassenger = currentPassenger->pNext;
     }
-
-    if(!seatAvailable || pTargetedPassenger == NULL)
+    
+    if (currentPassenger == NULL) 
         return false;
-
-    // Take the targeted passenger out of the list(to keep it sorted).
-    // If it is the head, then shift the list to the right.
-    // If its not the head, then it has a previous node,
-    // so set the previous nodes pNext equal to the 
-    // pTargetedPassengers next.
-    if(pTargetedPassenger == pFlight->pPassengers) {
-        pFlight->pPassengers = pTargetedPassenger->pNext;
-    } else if(pPrevTargetedPassenger != NULL) {
-        pPrevTargetedPassenger->pNext = pTargetedPassenger->pNext;
-    } 
-
-    // But it back to the list
-    if(pPassengerWithClosestNumber == NULL) {
-        pFlight->pPassengers = pTargetedPassenger;
+    
+    // Check if the requested seat number is already taken
+    Passenger *tempPassenger = pPassengerList;
+    while (tempPassenger != NULL && tempPassenger->seatNumber != requestedSeatNumber) {
+        tempPassenger = tempPassenger->pNext;
+    }
+    if (tempPassenger != NULL) {
+        return false;
+    }
+    
+    // Update the seat number of the targeted passenger
+    currentPassenger->seatNumber = requestedSeatNumber;
+    
+    // Remove the targeted passenger from the list
+    if (currentPassenger == pPassengerList) {
+        pPassengerList = currentPassenger->pNext;
     } else {
-        pTargetedPassenger->pNext = pPassengerWithClosestNumber->pNext;
-        pPassengerWithClosestNumber->pNext = pTargetedPassenger;
+        Passenger *prevPassenger = pPassengerList;
+        while (prevPassenger->pNext != currentPassenger) {
+            prevPassenger = prevPassenger->pNext;
+        }
+        prevPassenger->pNext = currentPassenger->pNext;
+    }
+    
+    // Re-insert the targeted passenger into the list at the correct position
+    Passenger *prevPassenger = NULL;
+    tempPassenger = pPassengerList;
+    while (tempPassenger != NULL && tempPassenger->seatNumber < requestedSeatNumber) {
+        prevPassenger = tempPassenger;
+        tempPassenger = tempPassenger->pNext;
+    }
+    if (prevPassenger == NULL) {
+        currentPassenger->pNext = pPassengerList;
+        pPassengerList = currentPassenger;
+    } else {
+        currentPassenger->pNext = prevPassenger->pNext;
+        prevPassenger->pNext = currentPassenger;
     }
 
+    pFlight->pPassengers = pPassengerList;
+    
     return true;
 }
+
+
 
 void printPassengerList(const Flight *pFlight) {
     if(pFlight == NULL || pFlight->pPassengers == NULL)
