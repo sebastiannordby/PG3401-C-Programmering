@@ -19,6 +19,7 @@ const unsigned short MN_EXIT_PROGRAM = 11;
 // Declare functions to skip precendence in code
 int readMenuChoice(void);
 void printMenu(void);
+void printMenuHeader(char *header);
 void promptAddFlight(FlightList *flightList);
 void promptAddPassenger(FlightList *flightList);
 void promptPrintFlight(FlightList *flightList);
@@ -45,7 +46,6 @@ int main(int argc, char *argv[]) {
         usePredefinedData(flightList);
     }
 
-
     int choice;
 
     while((choice = readMenuChoice()) != MN_EXIT_PROGRAM && choice != EOF) {
@@ -68,12 +68,12 @@ int main(int argc, char *argv[]) {
             case MN_DELETE_FLIGHT:
                 promptDeleteFlight(flightList);
                 break;
-            // case MN_REMOVE_PASSENGER_RES:
-            //     promptRemovePassengerRes();
-            //     break;
-            // case MN_CHANGE_PASSENGER_SEAT:
-            //     promptChangePassengerSeat();
-            //     break;
+            case MN_REMOVE_PASSENGER_RES:
+                promptRemovePassengerRes(flightList);
+                break;
+            case MN_CHANGE_PASSENGER_SEAT:
+                promptChangePassengerSeat(flightList);
+                break;
             // case MN_SEARCH_PASSENGER:
             //     promptSearchPassenger();
             //     break;
@@ -115,7 +115,7 @@ int readMenuChoice() {
 }
 
 void printMenuHeader(char *text) {
-    printf("---------- %s ----------\r\n", text);
+    printf("-------------------- %s --------------------\r\n", text);
 }
 
 void readString(char *str, int maxLength) {
@@ -130,7 +130,7 @@ void readString(char *str, int maxLength) {
 }
 
 void promptAddFlight(FlightList *flightList) {
-    printMenuHeader("Add flight");
+    printMenuHeader("ADD FLIGHT");
 
     char flightId[FLIGHT_ID_MAX_LENGTH];
     printf("Enter id: ");
@@ -142,11 +142,17 @@ void promptAddFlight(FlightList *flightList) {
 
     unsigned short numberOfSeats;
     printf("Enter number of seats: ");
-    int numberOfSeatsRes = scanf("%hu", &numberOfSeats);
+    if(scanf("%hu", &numberOfSeats) != 1) {
+        printf("Unable to read number of seats.\r\n");
+        return;
+    }
 
     unsigned short departureTime;
     printf("Enter departure time: ");
-    int departureTimeRes = scanf("%hu", &departureTime);
+    if(scanf("%hu", &departureTime) != 1) {
+        printf("Unable to read departure time.\r\n");
+        return;
+    }
 
     Flight *flight = addFlight(flightList, flightId, destination, numberOfSeats, departureTime);
 
@@ -159,7 +165,7 @@ void promptAddFlight(FlightList *flightList) {
 }
 
 void promptAddPassenger(FlightList *flightList) {
-    printMenuHeader("Add passenger to a flight");
+    printMenuHeader("ADD PASSENGER TO A FLIGHT");
 
     char flightId[FLIGHT_ID_MAX_LENGTH];
     printf("Enter flight id: ");
@@ -177,14 +183,15 @@ void promptAddPassenger(FlightList *flightList) {
 
     unsigned short age;
     printf("Enter age: ");
-    int ageRes = scanf("%hu", &age);
+    if(scanf("%hu", &age) != 1) {
+        printf("Unable to read age.\r\n");
+        return;
+    }
 
     unsigned short seatNumber;
     printf("Enter seat number(-1 for automatic allocation): ");
-    int seatNumberRes = scanf("%hu", &seatNumber);
-
-    if(ageRes == EOF || seatNumberRes == EOF) {
-        printf("Could not continue the registation of passenger.");
+    if(scanf("%hu", &seatNumber) != 1) {
+        printf("Unable to read seatnumber.\r\n");
         return;
     }
 
@@ -192,7 +199,7 @@ void promptAddPassenger(FlightList *flightList) {
         printf("Successfully added passenger \"%s\" to flight \"%s\"\r\n", 
             flightId, name);
     } else {
-        printf("Could not add passenger to flight.");
+        printf("Could not add passenger to flight.\r\n");
     }
 }
 
@@ -218,6 +225,7 @@ void freeFlightList(FlightList *flightList) {
 }
 
 void promptPrintFlight(FlightList *flightList) {
+    printMenuHeader("PRINT FLIGHT");
     char flightId[FLIGHT_ID_MAX_LENGTH];
     printf("Enter flight id: ");
     readString(flightId, FLIGHT_ID_MAX_LENGTH);
@@ -230,6 +238,85 @@ void promptPrintFlight(FlightList *flightList) {
 
     printf("Information for flight %s\r\n", flightId);
     printFlight(flight);
+}
+
+void promptFindFlightByIndex(FlightList *flightList) {
+    printMenuHeader("FIND FLIGHT BY INDEX");
+    printf("Enter index: ");
+    unsigned short index;
+    if(scanf("%hu", &index) != 1) {
+        printf("An error occured inputing index.");
+        return;
+    }
+
+    Flight *flight = getFlightByIndex(flightList, index);
+
+    if(flight == NULL) 
+        return;
+
+    printFlight(flight);
+}
+
+void promptFindFlightByDepartureTime(FlightList *flightList) {
+    printMenuHeader("FIND FLIGHT BY DEPARTURE TIME");
+    printf("Enter departure: ");
+    unsigned short departureTime;
+    if(scanf("%hu", &departureTime) != 1) {
+        printf("An error occured inputing departure time.");
+        return;
+    }
+
+    Flight *flight = getFlightByDepartureTime(flightList, departureTime);
+
+    if(flight == NULL) {
+        printf("Could not find flight with depature at \"%hu\"\r\n", departureTime);
+        return;
+    }
+
+    printf("Found flight with depature at \"%hu\"\r\n", departureTime);
+    printFlight(flight);
+}
+
+void promptDeleteFlight(FlightList *pFlightList) {
+    printMenuHeader("DELETE FLIGHT");
+    char flightId[FLIGHT_ID_MAX_LENGTH];
+    printf("Enter flight id: ");
+    readString(flightId, FLIGHT_ID_MAX_LENGTH);
+
+    if(deleteFlight(pFlightList, flightId)) 
+        printf("Successfully deleted flight \"%s\"\r\n", flightId);
+    else 
+        printf("Failed to delete flight with id of: \"%s\"\r\n", flightId);
+}
+
+void promptRemovePassengerRes(FlightList *flightList) {
+    printMenuHeader("REMOVE PASSENGER RESERVATION");
+
+    char flightId[FLIGHT_ID_MAX_LENGTH];
+    printf("Enter flight id: ");
+    readString(flightId, FLIGHT_ID_MAX_LENGTH);
+
+    unsigned short seatNumber;
+    printf("Enter seat number: ");
+    if(scanf("%hu", &seatNumber) != 1) {
+        printf("Unable to read seatnumber.\r\n");
+        return;
+    }
+
+    if(removePassenger(flightList, flightId, seatNumber)) 
+        printf("Successfully removed passenger reservation.\r\n");
+    else 
+        printf("Failed to delete passenger reservation.\r\n");
+}
+
+void promptChangePassengerSeat(FlightList *flightList) {
+    printMenuHeader("CHANGE PASSENGER SEAT");
+
+    char flightId[FLIGHT_ID_MAX_LENGTH];
+    printf("Enter flight id: ");
+    readString(flightId, FLIGHT_ID_MAX_LENGTH);
+
+    
 }
 
 void usePredefinedData(FlightList *flightList) {
@@ -281,55 +368,4 @@ void usePredefinedData(FlightList *flightList) {
     addPassenger(f6, 0, f6P3Name, 88);
 
     printf("Program now uses predefined data.\r\n");
-}
-
-void promptFindFlightByIndex(FlightList *flightList) {
-    printf("Find flight by index.\r\n");
-    printf("Enter index: ");
-    unsigned short index;
-    int indexInputRes = scanf("%hu", &index);
-    if(indexInputRes != 1) {
-        printf("An error occured inputing index.");
-        return;
-    }
-
-    Flight *flight = getFlightByIndex(flightList, index);
-
-    if(flight == NULL) 
-        return;
-
-    printFlight(flight);
-}
-
-void promptFindFlightByDepartureTime(FlightList *flightList) {
-    printf("Find flight by departure time.\r\n");
-    printf("Enter departure: ");
-    unsigned short departureTime;
-    int departureTimeInputRes = scanf("%hu", &departureTime);
-    if(departureTimeInputRes != 1) {
-        printf("An error occured inputing departure time.");
-        return;
-    }
-
-    Flight *flight = getFlightByDepartureTime(flightList, departureTime);
-
-    if(flight == NULL) {
-        printf("Could not find flight with depature at \"%hu\"\r\n", departureTime);
-        return;
-    }
-
-    printf("Found flight with depature at \"%hu\"\r\n", departureTime);
-    printFlight(flight);
-}
-
-void promptDeleteFlight(FlightList *pFlightList) {
-    printf("Delete flight.\r\n");
-    char flightId[FLIGHT_ID_MAX_LENGTH];
-    printf("Enter flight id: ");
-    readString(flightId, FLIGHT_ID_MAX_LENGTH);
-
-    if(deleteFlight(pFlightList, flightId)) 
-        printf("Successfully deleted flight \"%s\"\r\n", flightId);
-    else 
-        printf("Failed to delete flight with id of: \"%s\"\r\n", flightId);
 }

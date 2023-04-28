@@ -80,6 +80,7 @@ bool addPassenger(
 
 // Removes a passenger from the given flight.
 bool removePassenger(
+    FlightList *pFlightList,
     char flightId[FLIGHT_ID_MAX_LENGTH],
     unsigned short seatNumber);
 

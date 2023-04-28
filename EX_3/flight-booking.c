@@ -86,7 +86,6 @@ void printFlightList(const FlightList* flightList) {
     printDottedLine(numCharsDottedLine);
 }
 
-
 /*
     Adds a flight to the flight list.
 */
@@ -119,6 +118,58 @@ Flight* addFlight(
     }
 
     return newFlight;
+}
+
+bool deleteFlight(FlightList *pFlightList, char flightId[FLIGHT_ID_MAX_LENGTH]) {
+    if(pFlightList == NULL || pFlightList->head == NULL)
+        return false;
+
+    Flight *pFlightToDelete = pFlightList->head;
+
+    while (pFlightToDelete != NULL) {
+        if(strcasecmp(pFlightToDelete->flightID, flightId) == 0) {
+            // If the first flight is removed  
+            // Set the next flight to be the head
+            if(pFlightToDelete == pFlightList->head) {
+                pFlightList->head = pFlightToDelete->pNext;
+            } 
+            
+            // If the last flight is removed
+            // Set the previous flight to be the tail
+            if(pFlightToDelete == pFlightList->tail) {
+                pFlightList->tail = pFlightToDelete->pPrev;
+            } 
+
+            // If there is a flight before the target in the list:
+            // Sets it's previous to be the targeteds nexts.
+            if(pFlightToDelete->pPrev != NULL) {
+                pFlightToDelete->pPrev->pNext = pFlightToDelete->pNext;
+            }
+
+            // If there is a flight after the targeted in the list:
+            // Set it's next to be the targeteds flights previous.
+            if(pFlightToDelete->pNext != NULL) {
+                pFlightToDelete->pNext->pPrev = pFlightToDelete->pPrev;
+            }
+
+            Passenger *pPassenger = pFlightToDelete->pPassengers;
+
+            while (pPassenger != NULL) {
+                Passenger *pPassengerTemp = pPassenger;
+                pPassenger = pPassenger->pNext;
+                free(pPassengerTemp);
+            }
+
+            free(pFlightToDelete);
+            pFlightToDelete = NULL;
+
+            return true;
+        }
+
+        pFlightToDelete = pFlightToDelete->pNext;
+    }
+    
+    return false;
 }
 
 bool isSeatTaken(Passenger *p, unsigned short seatNumber) {
@@ -201,6 +252,37 @@ bool addPassenger(Flight *pFlight, unsigned short requestedSeatNumber,
     return true;
 }
 
+bool removePassenger(
+    FlightList *pFlightList,
+    char flightId[FLIGHT_ID_MAX_LENGTH], unsigned short seatNumber) {
+    if(flightId == NULL || seatNumber == 0)
+        return false;
+
+    Flight *pFlight = getFlightById(pFlightList, flightId);
+    if(pFlight == NULL)
+        return false;
+
+    Passenger *pCurrentPassenger = pFlight->pPassengers;
+    Passenger *pPreviousPassenger = NULL;
+
+    while(pCurrentPassenger != NULL) {
+        if(pCurrentPassenger->seatNumber == seatNumber) {
+            if(pPreviousPassenger != NULL) {
+                pPreviousPassenger->pNext = pCurrentPassenger->pNext;
+            }
+
+            free(pCurrentPassenger);
+            pCurrentPassenger = NULL;
+
+            return true;
+        }
+
+        pPreviousPassenger = pCurrentPassenger;
+        pCurrentPassenger = pCurrentPassenger->pNext;
+    }
+
+    return false;
+}
 
 void printPassengerList(const Flight *pFlight) {
     if(pFlight == NULL || pFlight->pPassengers == NULL)
@@ -257,7 +339,6 @@ Flight* getFlightByIndex(FlightList *pFlightList, unsigned short index) {
     return currentFlight;
 }
 
-
 Flight* getFlightByDepartureTime(FlightList *pFlightList, unsigned short time) {
     if(pFlightList == NULL)
         return NULL;
@@ -271,65 +352,14 @@ Flight* getFlightByDepartureTime(FlightList *pFlightList, unsigned short time) {
     return currentFlight;
 }
 
-bool deleteFlight(FlightList *pFlightList, char flightId[FLIGHT_ID_MAX_LENGTH]) {
-    if(pFlightList == NULL || pFlightList->head == NULL)
-        return false;
 
-    Flight *pFlightToDelete = pFlightList->head;
+// int* getAvailableSeats(const Flight *flight, unsigned short *size) {
+//     int *result = malloc(sizeof(int) * flight->numberOfSeats);
 
-    while (pFlightToDelete != NULL) {
-        if(strcasecmp(pFlightToDelete->flightID, flightId) == 0) {
-            // If the first flight is removed  
-            // Set the next flight to be the head
-            if(pFlightToDelete == pFlightList->head) {
-                pFlightList->head = pFlightToDelete->pNext;
-            } 
-            
-            // If the last flight is removed
-            // Set the previous flight to be the tail
-            if(pFlightToDelete == pFlightList->tail) {
-                pFlightList->tail = pFlightToDelete->pPrev;
-            } 
+//     if(flight->pPassengers == NULL) { 
 
-            // If there is a flight before the target in the list:
-            // Sets it's previous to be the targeteds nexts.
-            if(pFlightToDelete->pPrev != NULL) {
-                pFlightToDelete->pPrev->pNext = pFlightToDelete->pNext;
-            }
+//     }
 
-            // If there is a flight after the targeted in the list:
-            // Set it's next to be the targeteds flights previous.
-            if(pFlightToDelete->pNext != NULL) {
-                pFlightToDelete->pNext->pPrev = pFlightToDelete->pPrev;
-            }
-
-            Passenger *pPassenger = pFlightToDelete->pPassengers;
-
-            while (pPassenger != NULL) {
-                Passenger *pPassengerTemp = pPassenger;
-                pPassenger = pPassenger->pNext;
-                free(pPassengerTemp);
-            }
-
-            free(pFlightToDelete);
-            pFlightToDelete = NULL;
-
-            return true;
-        }
-
-        pFlightToDelete = pFlightToDelete->pNext;
-    }
-    
-    return false;
-}
-
-int* getAvailableSeats(const Flight *flight, unsigned short *size) {
-    int *result = malloc(sizeof(int) * flight->numberOfSeats);
-
-    if(flight->pPassengers == NULL) { 
-
-    }
-
-    return NULL;
-}
+//     return NULL;
+// }
 
