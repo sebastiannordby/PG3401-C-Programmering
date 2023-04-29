@@ -8,20 +8,20 @@ CFLAGS += -I$(INCLDIR)
 OBJDIR = obj
 
  # list all header files on the line below
-_DEPS = flight-booking.h dummy-flight-data.h
+_DEPS = 
 DEPS = $(patsubst %, $(INCLDIR)/%, $(_DEPS))
 
 #replace source files in the line below, 
 #but with the .o - extension
 # like: program.c -> program.o
-_OBJS = program.o flight-booking.o dummy-flight-data.o
+_OBJS = program.o
 OBJS = $(patsubst %, $(OBJDIR)/%, $(_OBJS))
 
 $(OBJDIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 #replace hello with the output file name
-booking-system: $(OBJS)
+ex4-program: $(OBJS)
 	gcc -o $@ $^ $(CFLAGS)
 
 .PHONY: clean

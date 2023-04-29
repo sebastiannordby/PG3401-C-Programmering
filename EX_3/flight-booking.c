@@ -41,6 +41,35 @@ void printFlight(const Flight *flight) {
     printDottedLine(100);
 }
 
+unsigned int getAssociatedFlightsByPassengerName(const FlightList *pFlightList, 
+    char passengerName[PASSENGER_NAME_MAX_LENGTH]) {
+
+    if(pFlightList == NULL || passengerName == NULL || pFlightList->head == NULL)
+        return 0;
+
+    unsigned int numberOfAssociatedFlights = 0;
+    Flight* currentFlight = pFlightList->head;
+
+    while (currentFlight != NULL) {
+        Passenger* currentPassenger = currentFlight->pPassengers;
+        
+        while (currentPassenger != NULL) {
+             // If there is a person with the given name on the flight,
+             // there is no need to check remaining passengers
+            if (strcasecmp(currentPassenger->name, passengerName) == 0) {
+                numberOfAssociatedFlights++;
+                break;
+            }
+
+            currentPassenger = currentPassenger->pNext;
+        }
+
+        currentFlight = currentFlight->pNext;
+    }
+
+    return numberOfAssociatedFlights;
+}
+
 /*
     Prints out a dotted line in the provided length
 */

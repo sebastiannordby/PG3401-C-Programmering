@@ -6,9 +6,7 @@
 #define FLIGHT_ID_MAX_LENGTH 10
 #define FLIGHT_DESTINATION_MAX_LENGTH 50
 
-/*
-    struct representing a passenger on a flight.
-*/
+// Struct representation of a passenger on a flight.
 typedef struct Passenger {
     unsigned short seatNumber;
     char name[PASSENGER_NAME_MAX_LENGTH];
@@ -16,14 +14,7 @@ typedef struct Passenger {
     struct Passenger *pNext;
 } Passenger;
 
-/*
-    struct representing a flight.
-    Examples of a flight: 
-    flightId: BA-42
-    destination: Oslo Airport
-    numberOfSeats: 98
-    depatureTime: 1020
-*/
+// Struct representation of a flight.
 typedef struct Flight {
     char flightID[10];
     char destination[50];
@@ -34,10 +25,7 @@ typedef struct Flight {
     struct Passenger *pPassengers;
 } Flight;
 
-/*
-    Double linked list to keep track
-    of the flights. 
-*/
+// Struct representing double linked list over flights.
 typedef struct FlightList {
     struct Flight *head;
     struct Flight *tail;
@@ -91,11 +79,6 @@ bool changePassengerSeat(
     unsigned short currentSeatNumber,
     unsigned short requestedSeatNumber);
 
-// Returns an array of available seats, and the size of the array.
-int* getAvailableSeats(
-    const Flight *pFlight, 
-    unsigned short *size);
-
 //Prints out a formated flight list.
 void printFlightList(
     const FlightList *pFlightList);
@@ -108,7 +91,8 @@ void printPassengerList(
 void printFlight(
     const Flight *pFlight);
 
-// Returns the number of accosiated flights by the passengers name.
+// Finds the number of accosiated flights by the passengers name.
 unsigned int getAssociatedFlightsByPassengerName(
+    const FlightList *pFlightList,
     char passengerName[PASSENGER_NAME_MAX_LENGTH]);
 #endif
