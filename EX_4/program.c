@@ -88,8 +88,8 @@ int countWordOccurences(char *text_to_search, char *search_word) {
 void* thread_A(void* arg) {
    ThreadData *params = (ThreadData *) arg;
 
-   FILE* fp = fopen(params->file_name, "rb");
-   if (!fp) {
+   FILE* input_file = fopen(params->file_name, "rb");
+   if (!input_file) {
       perror("Failed to open file");
       exit(EXIT_FAILURE);
    }
@@ -104,7 +104,7 @@ void* thread_A(void* arg) {
          pthread_cond_wait(&params->cond_empty, &params->mutex);
 
       int read_bytes = fread(params->buffer + params->bytes_in_buffer, 1, 
-         BUFFER_SIZE - params->bytes_in_buffer, fp);
+         BUFFER_SIZE - params->bytes_in_buffer, input_file);
       params->bytes_in_buffer += read_bytes;
 
       if (read_bytes < BUFFER_SIZE - params->bytes_in_buffer) {
@@ -118,7 +118,7 @@ void* thread_A(void* arg) {
       pthread_mutex_unlock(&params->mutex);
    }
 
-   fclose(fp);
+   fclose(input_file);
    pthread_exit(NULL);
 }
 
@@ -220,23 +220,23 @@ int main(int argc, char* argv[]) {
    // Create thread a
    if (pthread_create(&threadA, NULL, thread_A, (void*) pThreadData) != 0) {
       perror("Could not create thread A");
-      exit(1);
+      exit(EXIT_FAILURE);
    }
 
    // Create thread b
    if (pthread_create(&threadB, NULL, thread_B, (void*) pThreadData) != 0) {
       perror("Could not create thread B");
-      exit(1);
+      exit(EXIT_FAILURE);
    }
 
    if (pthread_join(threadA, NULL) != 0) {
       perror("Could not join thread A");
-      exit(1);
+      exit(EXIT_FAILURE);
    }
 
    if (pthread_join(threadB, NULL) != 0) {
       perror("Could not join thread B");
-      exit(1);
+      exit(EXIT_FAILURE);
    }
  
    // Free threaddata and set pointer to NULL.
