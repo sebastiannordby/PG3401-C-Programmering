@@ -6,25 +6,56 @@
 #define INPUT_FILE_NAME "input.txt"
 #define OUTPUT_FILE_NAME "output.txt"
 
-void print_struct(INT_METADATA *st) {
-    printf("Index: %d\r\n", st->iIndex);
-    printf("Number: %d\r\n", st->iNumber);
-    printf("bIsFibonacci: %d\r\n", st->bIsFibonacci);
-    printf("bIsPrimeNumber: %d\r\n", st->bIsPrimeNumber);
-    printf("bIsSquareNumber: %d\r\n", st->bIsSquareNumber);
-    printf("bIsCubeNumber: %d\r\n", st->bIsCubeNumber);
-    printf("bIsPerfectNumber: %d\r\n", st->bIsPerfectNumber);
-    printf("bIsAbdundantNumber: %d\r\n", st->bIsAbdundantNumber);
-    printf("bIsDeficientNumber: %d\r\n", st->bIsDeficientNumber);
-    printf("bIsOddNumber: %d\r\n", st->bIsOddNumber);
-    printf("\r\n");
+char* int_to_binary(int num);
+void print_meta_data(const INT_METADATA *st);
+void write_to_file(const IntMetadataNode* meta_data);
+IntMetadataNode* initialize_from_file();
+
+int main(void) {
+    // Read meta data from file
+    IntMetadataNode* meta_data = initialize_from_file();
+
+    // Could not read data
+    if(meta_data == NULL){
+        return 1;
+    }
+
+    // Output meta data to file
+    write_to_file(meta_data);
+
+    // Free memory allocated to store meta data
+    IntMetadataNode* temp;
+    while (meta_data != NULL) {
+        temp = meta_data;
+        meta_data = meta_data->next;
+        free(temp);
+    }
+
+    return 0;
+}
+
+void print_meta_data(const INT_METADATA *meta_data) {
+    char *format = "Index: %03d\tNumber: %05d\t Binary: %32s\tabun: %d\tcube: %d\tdef: %d\tfib: %d\todd: %d\tpert: %d\tprime: %d\tsqrt: %d\r\n";
+
+    printf(format,
+        meta_data->index, 
+        meta_data->number,
+        int_to_binary(meta_data->number), 
+        meta_data->is_abdundant,  
+        meta_data->is_cube, 
+        meta_data->is_deficient, 
+        meta_data->is_fibonacci, 
+        meta_data->is_odd, 
+        meta_data->is_perfect, 
+        meta_data->is_prime, 
+        meta_data->is_square);
 }
 
 /*
     Reads metadata from a file with path of INPUT_FILE_NAME.
     The input file can only contain numbers.
 */
-IntMetadataNode* readMetaData() {
+IntMetadataNode* initialize_from_file() {
     FILE *input = fopen(INPUT_FILE_NAME, "r");
     int numbers_size, num;
 
@@ -36,18 +67,20 @@ IntMetadataNode* readMetaData() {
     IntMetadataNode* head = NULL;
     IntMetadataNode* current = NULL;
 
+    printf("Initializing metadata:\r\n");
+
     while (fscanf(input, "%d", &num) > 0) {
         IntMetadataNode* node = (IntMetadataNode*) malloc(sizeof(IntMetadataNode));
-        node->data.iIndex = numbers_size;
-        node->data.iNumber = num;
-        node->data.bIsAbdundantNumber = isAbundantNumber(num);
-        node->data.bIsCubeNumber = isCubeNumber(num);
-        node->data.bIsDeficientNumber = isDeficientNumber(num);
-        node->data.bIsFibonacci = isFibonacci(num);
-        node->data.bIsOddNumber = isOdd(num);
-        node->data.bIsPerfectNumber = isPerfectNumber(num);
-        node->data.bIsPrimeNumber = isPrime(num);
-        node->data.bIsSquareNumber = isSquareNumber(num);
+        node->data.index = numbers_size;
+        node->data.number = num;
+        node->data.is_abdundant = isAbundantNumber(num);
+        node->data.is_cube = isCubeNumber(num);
+        node->data.is_deficient = isDeficientNumber(num);
+        node->data.is_fibonacci = isFibonacci(num);
+        node->data.is_odd = isOdd(num);
+        node->data.is_perfect = isPerfectNumber(num);
+        node->data.is_prime = isPrime(num);
+        node->data.is_square = isSquareNumber(num);
         node->next = NULL;
 
         if (head == NULL) { // First element must be head
@@ -58,10 +91,14 @@ IntMetadataNode* readMetaData() {
             current = node;
         }
 
+        print_meta_data(&node->data);
+
         numbers_size++;
     }
 
     fclose(input);
+
+    printf("Metadata successfully created.\r\n");
 
     return head;
 }
@@ -86,12 +123,13 @@ char* int_to_binary(int num) {
     return binary;
 }
 
+
 /*
     Outputs INT_METADATA provided in the linked list,
     to a file with the path of OUTPUT_FILE_NAME.
 */
-void write_meta_data(IntMetadataNode* metaData) {
-    if(metaData == NULL)
+void write_to_file(const IntMetadataNode* meta_data) {
+    if(meta_data == NULL)
         return;
 
     FILE *output = fopen(OUTPUT_FILE_NAME, "w+");
@@ -100,48 +138,31 @@ void write_meta_data(IntMetadataNode* metaData) {
         return;
     }
 
-    IntMetadataNode* current = metaData;
+    const IntMetadataNode* current = meta_data;
 
     // Iterate over the linked list
     while (current != NULL) {
         INT_METADATA data = current->data;
-        printf("Index: %d, Number: %d, Is Abundant Number: %d\n", 
-            data.iIndex, data.iNumber, data.bIsAbdundantNumber);
-        // Access other metadata fields here
 
         char *format = "Index: %03d\tNumber: %32s\tabun: %d\tcube: %d\tdef: %d\tfib: %d\todd: %d\tpert: %d\tprime: %d\tsqrt: %d\r\n";
 
         fprintf(output, format,
-            data.iIndex, int_to_binary(data.iNumber), data.bIsAbdundantNumber,  
-            data.bIsCubeNumber, data.bIsDeficientNumber, data.bIsFibonacci, 
-            data.bIsOddNumber, data.bIsPerfectNumber, data.bIsPrimeNumber, data.bIsSquareNumber);
+            data.index, 
+            int_to_binary(data.number), 
+            data.is_abdundant,  
+            data.is_cube, 
+            data.is_deficient, 
+            data.is_fibonacci, 
+            data.is_odd, 
+            data.is_perfect, 
+            data.is_prime, 
+            data.is_square);
 
         current = current->next;
     }
 
     fclose(output);
     output = NULL;
-}
 
-int main(void) {
-    // Read meta data from file
-    IntMetadataNode* metaData = readMetaData();
-
-    // Could not read data
-    if(metaData == NULL){
-        return 1;
-    }
-
-    // Output meta data to file
-    write_meta_data(metaData);
-
-    // Free memory allocated to store meta data
-    IntMetadataNode* temp;
-    while (metaData != NULL) {
-        temp = metaData;
-        metaData = metaData->next;
-        free(temp);
-    }
-
-    return 0;
+    printf("Metadata successfully written to %s\r\n", OUTPUT_FILE_NAME);
 }

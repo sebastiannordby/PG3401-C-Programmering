@@ -7,16 +7,16 @@
     changed it to a typedef struct for simpler use.
 */
 typedef struct _INT_METADATA {
-    int iIndex;
-    int iNumber;
-    bool bIsFibonacci;
-    bool bIsPrimeNumber;
-    bool bIsSquareNumber;
-    bool bIsCubeNumber;
-    bool bIsPerfectNumber;
-    bool bIsAbdundantNumber;
-    bool bIsDeficientNumber;
-    bool bIsOddNumber;
+    int index;
+    int number;
+    bool is_fibonacci;
+    bool is_prime;
+    bool is_square;
+    bool is_cube;
+    bool is_perfect;
+    bool is_abdundant;
+    bool is_deficient;
+    bool is_odd;
 } INT_METADATA;
 
 /*
