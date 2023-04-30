@@ -9,8 +9,9 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
-bool receive_command(int server_socket, client_command *cmd);
+bool handle_command(int server_socket, client_command *cmd);
 int create_client_socket(const char *server_host, int server_port);
+char* execute_command(client_command *cmd);
 
 int create_client_socket(const char *server_host, int server_port) {
     printf("Creating client socket at: %s:%d\r\n", server_host, server_port);
@@ -43,7 +44,7 @@ int create_client_socket(const char *server_host, int server_port) {
             break;
         }
 
-        receive_command(client_socket, cmd);
+        handle_command(client_socket, cmd);
         printf("Received this command: %s\r\n", cmd->command_string);
     }
 
@@ -58,15 +59,15 @@ int create_client_socket(const char *server_host, int server_port) {
     printf("Client shutdown successfully.\r\n");
 }
 
-bool receive_command(int server_socket, client_command *cmd) {
+bool handle_command(int server_socket, client_command *cmd) {
     if(recv(server_socket, &cmd->header, sizeof(cmd->header), 0) == -1) {
-        perror("First"); 
+        perror("Error reading header"); 
         return false;
     }
 
     cmd->command_string[cmd->header.command_length] = '\0';
     if(recv(server_socket, cmd->command_string, cmd->header.command_length, 0) == -1) {
-        perror("Second");
+        perror("Error reading body");
         free(cmd);
         return false;
     }
@@ -76,26 +77,33 @@ bool receive_command(int server_socket, client_command *cmd) {
         return false;
     }
 
+    char *response = execute_command(cmd);
+
+    printf("This should be the response: %s\r\n", response);
+
     return true;
 }
 
 // This function is copied from the link below(provided by lecturer), with a few modifictions:
 // http://www.eastwill.no/pg3401/eksamen_v23_oppgave5_exec.c
-// char* ExecuteCommand(const char *pcszCommand) {
-//    FILE* fp = NULL;
-//    char *pszReturnString = malloc(MAX_BUFFER_SIZE);
-//    if (pszReturnString == NULL) return NULL;
-//    memset(pszReturnString, 0, MAX_BUFFER_SIZE);
+char* execute_command(client_command *cmd) {
+   FILE* fp = NULL;
+   char *pszReturnString = malloc(MAX_CLIENT_RESPOSE);
+   
+   if (pszReturnString == NULL) 
+    return NULL;
 
-//    fp = popen(pcszCommand, "r");
-//    if (fp == NULL) {
-//       sprintf(pszReturnString, "Error: Failed to execute command");
-//    }
-//    else {
-//       if (fgets(pszReturnString, MAX_BUFFER_SIZE - 1, fp) == NULL) {
-//          sprintf(pszReturnString, "Error: Failed to read output");
-//       }
-//       pclose(fp);
-//    }
-//    return pszReturnString;
-// }
+   memset(pszReturnString, 0, MAX_CLIENT_RESPOSE);
+
+   fp = popen(cmd->command_string, "r");
+   if (fp == NULL) {
+      sprintf(pszReturnString, "Error: Failed to execute command");
+   } else {
+      if (fgets(pszReturnString, MAX_CLIENT_RESPOSE - 1, fp) == NULL)
+         sprintf(pszReturnString, "Error: Failed to read output");
+   
+      pclose(fp);
+   }
+
+   return pszReturnString;
+}

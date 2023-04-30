@@ -8,10 +8,20 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <signal.h>
+
+// The only way i could figure out how to quit the server
+// was by using signals. When looking up the documentation
+// i could not find a way to pass arguments to the signal handler.
+// Thats why i store this in a global variable.
+int server_socket;
+int client_socket;
+bool is_running = false;
 
 client_command create_command(char* command_str);
-void send_command_to_client(int client_socket, char *terminal_command);
+bool send_command_to_client(int client_socket, char *terminal_command);
 bool read_string(char *str, int maxLength);
+void tear_down_server(int signal_nr);
 
 // Starts a server at the given host and port.
 // When the client is connected the user is prompt to enter
@@ -19,9 +29,9 @@ bool read_string(char *str, int maxLength);
 // send a response back to the server.
 int create_server_socket(const char *host, int port) {
     printf("Creating server at: %s:%d\r\n", host, port);
+    signal(SIGINT, tear_down_server);
 
-    int server_socket = socket(AF_INET, SOCK_STREAM, 0);
-    int client_socket;
+    server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
     if(server_socket < 0) {
         perror("Error opening server socket");
@@ -47,6 +57,8 @@ int create_server_socket(const char *host, int port) {
         exit(EXIT_FAILURE);
     }
 
+    is_running = true;
+
     struct sockaddr_in client_addr;
     socklen_t client_addr_len = sizeof(client_addr);
     if((client_socket = accept(server_socket, (struct sockaddr *) &client_addr, &client_addr_len)) < 0) {
@@ -60,14 +72,19 @@ int create_server_socket(const char *host, int port) {
     do{
         printf("Enter command to execute on the client: ");
         still_exec = read_string(terminal_cmd, MAX_COMMAND_LENGTH);
-        printf("Sending command: \n\"%s\"\n to client.\r\n", terminal_cmd);
-        send_command_to_client(client_socket, terminal_cmd);
-    } while(still_exec);
+        if(send_command_to_client(client_socket, terminal_cmd))
+            printf("Successfully sent command: < %s > to client.\r\n", terminal_cmd);
+    } while(still_exec && is_running);
 
     free(terminal_cmd);
 
-    // send(client_socket, "Hello", 5, 0);
-    printf("Hello sent to the client\r\n");
+    return server_socket;
+}
+
+void tear_down_server(int signal_nr) {
+    signal(SIGINT, tear_down_server);
+    printf("Tearing down server..\r\n");
+
     if(close(client_socket) < 0) {
         perror("Error closing client connection");
     }
@@ -77,7 +94,7 @@ int create_server_socket(const char *host, int port) {
         exit(EXIT_FAILURE);
     }
 
-    return server_socket;
+    printf("Server successfully teared down..\r\n");
 }
 
 // Creation of client_command struct.
@@ -90,10 +107,15 @@ client_command create_command(char* command_str) {
 
 // Send a command to the client.
 // Client should recieve this and execute the terminal_command.
-void send_command_to_client(int client_socket, char *terminal_command) {
+bool send_command_to_client(int client_socket, char *terminal_command) {
+    if(terminal_command == NULL || strlen(terminal_command) == 0)
+        return false; // No need to send an empty command.
+
     client_command cmd = create_command(terminal_command);
     send(client_socket, &cmd.header, sizeof(cmd.header), 0);
     send(client_socket, cmd.command_string, cmd.header.command_length, 0);
+
+    return true;
 }
 
 // Reads user input inside bounderies of max_length.
