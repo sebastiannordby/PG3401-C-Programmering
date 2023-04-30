@@ -8,21 +8,21 @@
 
 // Struct representation of a passenger on a flight.
 typedef struct Passenger {
-    unsigned short seatNumber;
+    unsigned short seat_number;
     char name[PASSENGER_NAME_MAX_LENGTH];
     unsigned short age;
-    struct Passenger *pNext;
+    struct Passenger *next;
 } Passenger;
 
 // Struct representation of a flight.
 typedef struct Flight {
     char flightID[10];
     char destination[50];
-    unsigned short numberOfSeats;
-    unsigned short departureTime;
-    struct Flight *pNext;
-    struct Flight *pPrev;
-    struct Passenger *pPassengers;
+    unsigned short number_of_seats;
+    unsigned short departure_time;
+    struct Flight *next;
+    struct Flight *prev;
+    struct Passenger *passengers;
 } Flight;
 
 // Struct representing double linked list over flights.
@@ -32,67 +32,67 @@ typedef struct FlightList {
 } FlightList;
 
 // Adds a flight to the list flightList.
-Flight* addFlight(
-    FlightList *pFlightList, 
-    char flightId[FLIGHT_ID_MAX_LENGTH], 
+Flight* add_flight(
+    FlightList *flight_list, 
+    char flight_id[FLIGHT_ID_MAX_LENGTH], 
     char destination[FLIGHT_DESTINATION_MAX_LENGTH], 
-    unsigned short numberOfSeats, 
-    unsigned short departureTime);
+    unsigned short number_of_seats, 
+    unsigned short departure_time);
 
 // Removes a flight from flightlist.
-bool deleteFlight(
-    FlightList *pFlightList, 
-    char flightId[FLIGHT_ID_MAX_LENGTH]);
+bool delete_flight(
+    FlightList *flight_list, 
+    char flight_id[FLIGHT_ID_MAX_LENGTH]);
 
 // Finds a flight with given id.
-Flight* getFlightById(
-    FlightList *pFlightList, 
-    char flightId[FLIGHT_ID_MAX_LENGTH]);
+Flight* get_flight_by_id(
+    FlightList *flight_list, 
+    char flight_id[FLIGHT_ID_MAX_LENGTH]);
 
 // Finds a flight by index.
-Flight* getFlightByIndex(
-    FlightList *pFlightList,
+Flight* get_flight_by_index(
+    FlightList *flight_list,
     unsigned short index);
 
 // Finds a flight by departure time.
-Flight* getFlightByDepartureTime(
-    FlightList *pFlightList,
+Flight* get_flight_by_departure_time(
+    FlightList *flight_list,
     unsigned short time);
 
 // Adds a passenger to given flight.
-bool addPassenger(
-    Flight *pFlightList, 
-    unsigned short requestedSeatNumber, 
+bool add_passenger(
+    Flight *flight_list, 
+    unsigned short requested_seat_number, 
     char name[PASSENGER_NAME_MAX_LENGTH], 
     unsigned short age);
 
 // Removes a passenger from given flight.
-bool removePassenger(
-    FlightList *pFlightList,
-    char flightId[FLIGHT_ID_MAX_LENGTH],
-    unsigned short seatNumber);
+bool remove_passenger(
+    FlightList *flight_list,
+    char flight_id[FLIGHT_ID_MAX_LENGTH],
+    unsigned short seat_number);
 
 // Changes seat for given passenger, on given flight.
-bool changePassengerSeat(
-    FlightList *pFlightList,
-    char flightId[FLIGHT_ID_MAX_LENGTH],
-    unsigned short currentSeatNumber,
-    unsigned short requestedSeatNumber);
+bool change_passenger_seat(
+    FlightList *flight_list,
+    char flight_id[FLIGHT_ID_MAX_LENGTH],
+    unsigned short current_seat_number,
+    unsigned short requested_seat_number);
 
 //Prints out a formated flight list.
-void printFlightList(
-    const FlightList *pFlightList);
+void print_flight_list(
+    const FlightList *flight_list);
 
 // Prints out a formated passenger list for the given flight.
-void printPassengerList(
-    const Flight *pFlight);
+void print_passenger_list(
+    const Flight *flight);
 
 // Print out a single flight
-void printFlight(
-    const Flight *pFlight);
+void print_flight(
+    const Flight *flight);
 
 // Finds the number of accosiated flights by the passengers name.
-unsigned int getAssociatedFlightsByPassengerName(
-    const FlightList *pFlightList,
-    char passengerName[PASSENGER_NAME_MAX_LENGTH]);
+unsigned int get_associated_flights_by_passenger_name(
+    const FlightList *flight_list,
+    char passenger_name[PASSENGER_NAME_MAX_LENGTH]);
 #endif

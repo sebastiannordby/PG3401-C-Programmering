@@ -19,7 +19,8 @@ OBJS = $(patsubst %, $(OBJDIR)/%, $(_OBJS))
 $(OBJDIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-booking-system: $(OBJS)
+# The program name is flbook
+flbook: $(OBJS)
 	gcc -o $@ $^ $(CFLAGS)
 
 .PHONY: clean
