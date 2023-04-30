@@ -73,14 +73,14 @@ IntMetadataNode* initialize_from_file() {
         IntMetadataNode* node = (IntMetadataNode*) malloc(sizeof(IntMetadataNode));
         node->data.index = numbers_size;
         node->data.number = num;
-        node->data.is_abdundant = isAbundantNumber(num);
-        node->data.is_cube = isCubeNumber(num);
-        node->data.is_deficient = isDeficientNumber(num);
-        node->data.is_fibonacci = isFibonacci(num);
-        node->data.is_odd = isOdd(num);
-        node->data.is_perfect = isPerfectNumber(num);
-        node->data.is_prime = isPrime(num);
-        node->data.is_square = isSquareNumber(num);
+        node->data.is_abdundant = is_abundant_number(num);
+        node->data.is_cube = is_cube_number(num);
+        node->data.is_deficient = is_deficient_number(num);
+        node->data.is_fibonacci = is_fibonacci(num);
+        node->data.is_odd = is_odd(num);
+        node->data.is_perfect = is_perfect_number(num);
+        node->data.is_prime = is_prime(num);
+        node->data.is_square = is_square_number(num);
         node->next = NULL;
 
         if (head == NULL) { // First element must be head
@@ -105,10 +105,17 @@ IntMetadataNode* initialize_from_file() {
 
 /*
     Converts any integer to a binary as a string.
-    INT_MAX when converted to binary can only be 32 characters long,
+    The biggest integer value INT_MAX when converted to binary can only be 32 characters long,
     hence the size of 33, because with need the NULL terminator.
     The downside with this function is that it converts all integers 
     into a 32(33) bit long string.
+
+    This conversion work by shifting the number to the right by i,
+    and this returns the bit in number at i position. Then the
+    '&' (and) operator is used to subract the least significant.
+    When the bit is extracted the bit is converted to ASCII character representation
+    by adding character '0', which is 48 in ascii. 
+    Since '1' is 49 in ASCII, and the bit is either 1 or 0, we get the correct representation.
 */
 char* int_to_binary(int num) {
     char* binary = malloc(sizeof(char) * 33);
@@ -122,7 +129,6 @@ char* int_to_binary(int num) {
 
     return binary;
 }
-
 
 /*
     Outputs INT_METADATA provided in the linked list,

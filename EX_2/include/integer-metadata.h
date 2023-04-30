@@ -5,6 +5,21 @@
     INT_METADATA holds information about a integer.
     This struct was provided in the exam text, but i
     changed it to a typedef struct for simpler use.
+
+    This was the original struct provided in the exam text.
+    I did some modifications to fit my conventions.
+    struct OPPGAVE2_TALL_METADATA {
+        int iIndex; // Rekkefølge i filen, første tall = 1
+        int iNumber; // Tallet, som lest fra input filen
+        bool bIsFibonacci;
+        bool bIsPrimeNumber;
+        bool bIsSquareNumber;
+        bool bIsCubeNumber;
+        bool bIsPerfectNumber;
+        bool bIsAbundantNumber;
+        bool bIsDeficientNumber;
+        bool bIsOddNumber;
+    }
 */
 typedef struct _INT_METADATA {
     int index;

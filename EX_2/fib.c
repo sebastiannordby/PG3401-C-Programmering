@@ -1,3 +1,6 @@
+// This file was was downloaded from the link below and provided in the exam text.
+// Only modification was changing the function name to snake case.
+// http://www.eastwill.no/pg3401/eksamen_v23_oppgave2_fib.c
 
 #include <stdbool.h>
 
@@ -7,7 +10,7 @@ number equal to n is found, the function returns true (1), otherwise, it
 returns false (0).*/
 
 
-bool isFibonacci(int n) {
+bool is_fibonacci(int n) {
    int a = 0, b = 1, c = a + b;
    while (c < n) {
       a = b;
