@@ -21,7 +21,8 @@ OBJS = $(patsubst %, $(OBJDIR)/%, $(_OBJS))
 $(OBJDIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-number-program: $(OBJS)
+# The program name is int-alyze
+int-alyze: $(OBJS)
 	gcc -o $@ $^ $(CFLAGS)
 
 .PHONY: clean
