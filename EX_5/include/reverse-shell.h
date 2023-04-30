@@ -1,0 +1,8 @@
+#ifndef __REVERSE_SHELL_H__
+#define __REVERSE_SHELL_H__
+
+#define MAX_COMMAND_LENGTH 100
+#define MAX_CLIENT_RESPOSE 4092
+
+
+#endif

@@ -8,7 +8,7 @@ CFLAGS += -I$(INCLDIR)
 OBJDIR = obj
 
  # list all header files on the line below
-_DEPS = 
+_DEPS = server.h client.h reverse-shell.h
 DEPS = $(patsubst %, $(INCLDIR)/%, $(_DEPS))
 
 #replace source files in the line below, 
