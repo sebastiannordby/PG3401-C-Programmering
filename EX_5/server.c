@@ -73,8 +73,21 @@ void create_server_socket(const char *host, int port) {
     do{
         printf("Enter command to execute on the client: ");
         still_exec = read_string(terminal_cmd, MAX_COMMAND_LENGTH);
-        if(send_command_to_client(server_side_client_socket, terminal_cmd))
+        if(send_command_to_client(server_side_client_socket, terminal_cmd)) {
             printf("Successfully sent command: < %s > to client.\r\n", terminal_cmd);
+            int response_size;
+
+            recv(server_side_client_socket, &response_size, sizeof(int), 0);
+
+            if(response_size > 0) {
+                printf("The message recieved has size: %d\r\n", response_size);
+                char* response = malloc(response_size);
+                recv(server_side_client_socket, response, response_size, 0);
+                printf("Response:\r\n%s\r\n", response);
+                free(response);
+            }
+
+        }
     } while(still_exec && server_is_running);
 
     free(terminal_cmd);
@@ -84,20 +97,23 @@ void create_server_socket(const char *host, int port) {
 // should tear down by closing the client_socket, and then
 // close the server_side_socket.
 void tear_down_server(int signal_nr) {
-    signal(SIGINT, tear_down_server);
-    printf("Tearing down server..\r\n");
+    if(server_is_running) {
+        signal(SIGINT, tear_down_server);
+        printf("Tearing down server..\r\n");
 
-    if(server_side_client_socket != 0 && close(server_side_client_socket) < 0) {
-        perror("Error closing client connection");
+        if(server_side_client_socket != 0 && close(server_side_client_socket) < 0) {
+            perror("Error closing client connection");
+        }
+
+        if(server_side_socket != 0 && close(server_side_socket) < 0) {
+            perror("Error closing server");
+            exit(EXIT_FAILURE);
+        }
+
+        server_is_running = false;
+        printf("Server successfully teared down..\r\n");
+        exit(EXIT_SUCCESS);
     }
-
-    if(server_side_socket != 0 && close(server_side_socket) < 0) {
-        perror("Error closing server");
-        exit(EXIT_FAILURE);
-    }
-
-    server_is_running = false;
-    printf("Server successfully teared down..\r\n");
 }
 
 // Creation of client_command struct.

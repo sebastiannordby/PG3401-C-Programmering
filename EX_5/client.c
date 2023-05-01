@@ -18,7 +18,7 @@ int client_side_socket;
 bool client_is_running = false;
 
 bool handle_command(int server_socket, client_command *cmd);
-char* execute_command(client_command *cmd);
+char* execute_terminal_command(char *cmd);
 void tear_down_client(int signal_nr);
 
 void create_client_socket(const char *server_host, int server_port) {
@@ -97,36 +97,53 @@ bool handle_command(int server_socket, client_command *cmd) {
         return false;
     }
 
-    char *response = execute_command(cmd);
+    char *response = execute_terminal_command(cmd->command_string);
+    int response_length = strlen(response);
 
-    printf("This should be the response: %s\r\n", response);
+    printf("This should be the response(%d): %s\r\n", response_length, response);
+
+    send(client_side_socket, &response_length, sizeof(response_length), 0);
+    send(client_side_socket, response, response_length, 0);
+
+    free(response);
+    response = NULL;
 
     return true;
 }
 
 // This function is copied from the link below(provided by lecturer), with a few modifictions:
 // http://www.eastwill.no/pg3401/eksamen_v23_oppgave5_exec.c
-char* execute_command(client_command *cmd) {
-   FILE* terminal_stream = NULL;
-   char *response = malloc(sizeof(char) * MAX_CLIENT_RESPOSE);
-   
-   if (response == NULL) 
-    return NULL;
+char* execute_terminal_command(char *cmd) {
+    if(cmd == NULL)
+        return NULL;
 
-   memset(response, 0, MAX_CLIENT_RESPOSE);
+    FILE* terminal_stream = NULL;
+    char *response = malloc(sizeof(char) * MAX_CLIENT_RESPOSE);
+    
+    if (response == NULL) 
+        return NULL;
 
-   terminal_stream = popen(cmd->command_string, "r");
+    memset(response, 0, MAX_CLIENT_RESPOSE);
+    terminal_stream = popen(cmd, "r");
 
-   if (terminal_stream == NULL) {
-      sprintf(response, "Error: Failed to execute command");
-   } else {
-      if (fgets(response, MAX_CLIENT_RESPOSE - 1, terminal_stream) == NULL)
-         sprintf(response, "Error: Failed to read output");
+    size_t remaining_bytes = MAX_CLIENT_RESPOSE - 1;
+    response[0] = '\0';
 
-        printf("Wow: %s\r\n", response);
-   
-      pclose(terminal_stream);
-   }
+    if (terminal_stream == NULL) {
+        sprintf(response, "Error: Failed to execute command");
+    } else {
+        char buffer[MAX_CLIENT_RESPOSE];
+    
+        // Concat the response while there is more bytes space lest
+        while (remaining_bytes > 0 && fgets(buffer, remaining_bytes, terminal_stream) != NULL) {
+            strncat(response, buffer, remaining_bytes);
+            remaining_bytes = MAX_CLIENT_RESPOSE - strlen(response) - 1;
+        }
 
-   return response;
+        response[MAX_CLIENT_RESPOSE - remaining_bytes] = '\0';
+    
+        pclose(terminal_stream);
+    }
+
+    return response;
 }
