@@ -19,7 +19,7 @@ OBJS = $(patsubst %, $(OBJDIR)/%, $(_OBJS))
 $(OBJDIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-ex4-program: $(OBJS)
+text-alyze: $(OBJS)
 	gcc -o $@ $^ $(CFLAGS)
 
 .PHONY: clean

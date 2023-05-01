@@ -34,8 +34,11 @@ int main(void) {
     return 0;
 }
 
+// Prints out the meta data formated.
+// Index and number is spaced with 10 to fit all integers.
+// Binary is spaced to 32 to fit all integers converted to binary.
 void print_meta_data(const INT_METADATA *meta_data) {
-    char *format = "Index: %03d\tNumber: %05d\t Binary: %32s\tabun: %d\tcube: %d\tdef: %d\tfib: %d\todd: %d\tpert: %d\tprime: %d\tsqrt: %d\r\n";
+    char *format = "Index: %-10d Number: %-10d Binary: %32s abun: %d cube: %d def: %d fib: %d odd: %d pert: %d prime: %d sqrt: %d\r\n";
 
     printf(format,
         meta_data->index, 
@@ -150,7 +153,7 @@ void write_to_file(const IntMetadataNode* meta_data) {
     while (current != NULL) {
         INT_METADATA data = current->data;
 
-        char *format = "Index: %03d\tNumber: %32s\tabun: %d\tcube: %d\tdef: %d\tfib: %d\todd: %d\tpert: %d\tprime: %d\tsqrt: %d\r\n";
+        char *format = "Index: %-10d Number: %-32s abun: %d cube: %d def: %d fib: %d odd: %d pert: %d prime: %d sqrt: %d\r\n";
 
         fprintf(output, format,
             data.index, 

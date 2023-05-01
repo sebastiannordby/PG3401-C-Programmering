@@ -8,16 +8,25 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <signal.h>
+
+// The only way i could figure out how to quit the program
+// was by using signals. When looking up the documentation
+// i could not find a way to pass arguments to the signal handler.
+// Thats why i store these as global variables.
+int client_side_socket;
+bool client_is_running = false;
 
 bool handle_command(int server_socket, client_command *cmd);
-int create_client_socket(const char *server_host, int server_port);
 char* execute_command(client_command *cmd);
+void tear_down_client(int signal_nr);
 
-int create_client_socket(const char *server_host, int server_port) {
+void create_client_socket(const char *server_host, int server_port) {
     printf("Creating client socket at: %s:%d\r\n", server_host, server_port);
+    signal(SIGINT, tear_down_client);
 
-    int client_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if(client_socket < 0) {
+    client_side_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if(client_side_socket < 0) {
         perror("Error opening client socket");
         exit(EXIT_FAILURE);
     }
@@ -27,7 +36,7 @@ int create_client_socket(const char *server_host, int server_port) {
     socket_address.sin_port = htons(server_port);
     socket_address.sin_addr.s_addr = inet_addr(server_host);
 
-    if(connect(client_socket, (struct sockaddr *) &socket_address, 
+    if(connect(client_side_socket, (struct sockaddr *) &socket_address, 
         sizeof(socket_address)) < 0) {
         perror("Error connecting client socket");
         exit(EXIT_FAILURE);
@@ -39,24 +48,35 @@ int create_client_socket(const char *server_host, int server_port) {
         
         char buf;
         // Check if the server connection has been closed by pining the server.
-        if (recv(client_socket, &buf, sizeof(buf), MSG_PEEK) == 0) {
+        if (recv(client_side_socket, &buf, sizeof(buf), MSG_PEEK) == 0) {
             // The server has closed the connection, exit the loop.
             break;
         }
 
-        handle_command(client_socket, cmd);
+        handle_command(client_side_socket, cmd);
         printf("Received this command: %s\r\n", cmd->command_string);
     }
 
     free(cmd);
     cmd = NULL;
 
-    if(close(client_socket) < 0) {
+    if(close(client_side_socket) < 0) {
         perror("Error closing socket");
         exit(EXIT_FAILURE);
     }
 
     printf("Client shutdown successfully.\r\n");
+}
+
+void tear_down_client(int signal_nr) {
+    signal(SIGINT, tear_down_client);
+    printf("Tearing down client..\r\n");
+
+    if(client_side_socket != 0 && close(client_side_socket) < 0) {
+        perror("Error closing client connection");
+    }
+
+    printf("Client successfully teared down..\r\n");
 }
 
 bool handle_command(int server_socket, client_command *cmd) {
@@ -87,23 +107,26 @@ bool handle_command(int server_socket, client_command *cmd) {
 // This function is copied from the link below(provided by lecturer), with a few modifictions:
 // http://www.eastwill.no/pg3401/eksamen_v23_oppgave5_exec.c
 char* execute_command(client_command *cmd) {
-   FILE* fp = NULL;
-   char *pszReturnString = malloc(MAX_CLIENT_RESPOSE);
+   FILE* terminal_stream = NULL;
+   char *response = malloc(sizeof(char) * MAX_CLIENT_RESPOSE);
    
-   if (pszReturnString == NULL) 
+   if (response == NULL) 
     return NULL;
 
-   memset(pszReturnString, 0, MAX_CLIENT_RESPOSE);
+   memset(response, 0, MAX_CLIENT_RESPOSE);
 
-   fp = popen(cmd->command_string, "r");
-   if (fp == NULL) {
-      sprintf(pszReturnString, "Error: Failed to execute command");
+   terminal_stream = popen(cmd->command_string, "r");
+
+   if (terminal_stream == NULL) {
+      sprintf(response, "Error: Failed to execute command");
    } else {
-      if (fgets(pszReturnString, MAX_CLIENT_RESPOSE - 1, fp) == NULL)
-         sprintf(pszReturnString, "Error: Failed to read output");
+      if (fgets(response, MAX_CLIENT_RESPOSE - 1, terminal_stream) == NULL)
+         sprintf(response, "Error: Failed to read output");
+
+        printf("Wow: %s\r\n", response);
    
-      pclose(fp);
+      pclose(terminal_stream);
    }
 
-   return pszReturnString;
+   return response;
 }

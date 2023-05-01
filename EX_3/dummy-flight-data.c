@@ -7,13 +7,13 @@ void use_predefined_dummy_data(FlightList *pFlightList) {
     printf("Adding flights...\r\n");
 
     char f1Id[FLIGHT_ID_MAX_LENGTH] = "OSL1234\0";
-    char f1Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Oslo Lufthavn\0";
+    char f1Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Oslo Airport (OSL)\0";
     char f2Id[FLIGHT_ID_MAX_LENGTH] = "GDN1234\0";
     char f2Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Gdansk Airport\0";
     char f3Id[FLIGHT_ID_MAX_LENGTH] = "AYA1234\0";
     char f3Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Alanya International\0";
     char f4Id[FLIGHT_ID_MAX_LENGTH] = "CHN1234\0";
-    char f4Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Copenhagen\0";
+    char f4Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Copenhagen Airport\0";
     char f5Id[FLIGHT_ID_MAX_LENGTH] = "STC1234\0";
     char f5Dest[FLIGHT_DESTINATION_MAX_LENGTH] = "Stockholm Airport\0";
     char f6Id[FLIGHT_ID_MAX_LENGTH] = "TEN1234\0";
@@ -49,8 +49,13 @@ void use_predefined_dummy_data(FlightList *pFlightList) {
     add_passenger(f6, 2, f6_p2_name, 42);
     add_passenger(f6, 3, f6_p3_name, 88);
 
-    print_flight(f6);
+    
+    print_flight(f1);
+    print_flight(f2);
+    print_flight(f3);
+    print_flight(f4);
+    print_flight(f5);
     print_flight(f6);
 
-    printf("Program now uses predefined data.\r\n");
+    printf("Program now uses predefined data as displayed above.\r\n");
 }

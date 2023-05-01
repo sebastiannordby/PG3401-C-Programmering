@@ -42,9 +42,9 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    // If there are any arguments run with preloaded
+    // If program if runned with -predef run with preloaded
     // flight data. Easier for debugging purposes.
-    if(argc > 1) 
+    if(argc == 2 && strcmp(argv[1], "-predef") == 0) 
         use_predefined_dummy_data(flight_list);
 
     // Handle the menu prompting and delegation of which

@@ -21,9 +21,12 @@ void print_flight(const Flight *flight) {
     printf("%-10s| %-50s| %-10d | %-10d\r\n", 
         flight->flightID, flight->destination, 
         flight->departure_time, flight->number_of_seats);
-    print_dotted_line(100);
+
     
     if(flight->passengers != NULL) {
+        printf("\r\nPassengers for flight %s:\r\n", flight->destination);
+        print_dotted_line(100);
+
         Passenger *currentPassenger = flight->passengers;
         printf("%-5s| %-50s| %-3s\r\n", 
             "Seat", "Name", "Age");
@@ -36,6 +39,8 @@ void print_flight(const Flight *flight) {
 
             currentPassenger = currentPassenger->next;
         }
+    } else {
+        printf("\r\nNo passengers registred for flight %s:\r\n", flight->destination);
     }
 
     print_dotted_line(100);

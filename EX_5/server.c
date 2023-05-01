@@ -10,14 +10,15 @@
 #include <unistd.h>
 #include <signal.h>
 
-// The only way i could figure out how to quit the server
+// The only way i could figure out how to quit the program
 // was by using signals. When looking up the documentation
 // i could not find a way to pass arguments to the signal handler.
-// Thats why i store this in a global variable.
-int server_socket;
-int client_socket;
-bool is_running = false;
+// Thats why i store these as global variables.
+int server_side_socket;
+int server_side_client_socket;
+bool server_is_running = false;
 
+// Define functions for the server:
 client_command create_command(char* command_str);
 bool send_command_to_client(int client_socket, char *terminal_command);
 bool read_string(char *str, int maxLength);
@@ -27,13 +28,13 @@ void tear_down_server(int signal_nr);
 // When the client is connected the user is prompt to enter
 // commands that should execute on the client and 
 // send a response back to the server.
-int create_server_socket(const char *host, int port) {
+void create_server_socket(const char *host, int port) {
     printf("Creating server at: %s:%d\r\n", host, port);
     signal(SIGINT, tear_down_server);
 
-    server_socket = socket(AF_INET, SOCK_STREAM, 0);
+    server_side_socket = socket(AF_INET, SOCK_STREAM, 0);
 
-    if(server_socket < 0) {
+    if(server_side_socket < 0) {
         perror("Error opening server socket");
         exit(EXIT_FAILURE);
     }
@@ -44,7 +45,7 @@ int create_server_socket(const char *host, int port) {
     socket_addr.sin_addr.s_addr = inet_addr(host);
 
     // Bind the server socket to the address.
-    if(bind(server_socket, (struct sockaddr *) 
+    if(bind(server_side_socket, (struct sockaddr *) 
         &socket_addr, sizeof(socket_addr)) < 0) {
         perror("Error binding");
         exit(EXIT_FAILURE);
@@ -52,16 +53,16 @@ int create_server_socket(const char *host, int port) {
 
     // Listen for incoming, but only one client 
     // connection allowed.
-    if(listen(server_socket, 1) < 0) {
+    if(listen(server_side_socket, 1) < 0) {
         perror("Fail to listen");
         exit(EXIT_FAILURE);
     }
 
-    is_running = true;
+    server_is_running = true;
 
     struct sockaddr_in client_addr;
     socklen_t client_addr_len = sizeof(client_addr);
-    if((client_socket = accept(server_socket, (struct sockaddr *) &client_addr, &client_addr_len)) < 0) {
+    if((server_side_client_socket = accept(server_side_socket, (struct sockaddr *) &client_addr, &client_addr_len)) < 0) {
         perror("Error accepting client");
         exit(EXIT_FAILURE);
     }
@@ -72,28 +73,30 @@ int create_server_socket(const char *host, int port) {
     do{
         printf("Enter command to execute on the client: ");
         still_exec = read_string(terminal_cmd, MAX_COMMAND_LENGTH);
-        if(send_command_to_client(client_socket, terminal_cmd))
+        if(send_command_to_client(server_side_client_socket, terminal_cmd))
             printf("Successfully sent command: < %s > to client.\r\n", terminal_cmd);
-    } while(still_exec && is_running);
+    } while(still_exec && server_is_running);
 
     free(terminal_cmd);
-
-    return server_socket;
 }
 
+// When CTRL + C is pressed the server 
+// should tear down by closing the client_socket, and then
+// close the server_side_socket.
 void tear_down_server(int signal_nr) {
     signal(SIGINT, tear_down_server);
     printf("Tearing down server..\r\n");
 
-    if(close(client_socket) < 0) {
+    if(server_side_client_socket != 0 && close(server_side_client_socket) < 0) {
         perror("Error closing client connection");
     }
 
-    if(close(server_socket) < 0) {
+    if(server_side_socket != 0 && close(server_side_socket) < 0) {
         perror("Error closing server");
         exit(EXIT_FAILURE);
     }
 
+    server_is_running = false;
     printf("Server successfully teared down..\r\n");
 }
 

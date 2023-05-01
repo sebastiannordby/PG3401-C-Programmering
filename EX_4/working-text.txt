@@ -1,8 +1,8 @@
 Hamlet was at the supermarket and it my pleasure to meet the tragedy. it was sad.
 Hamlet, Hamlet.
 
-and: 2
-at: 2
-it: 3
-my: 2
-Hamlet: 4
+and : 2
+at : 2
+it : 3
+my : 2
+Hamlet : 4

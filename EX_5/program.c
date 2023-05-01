@@ -20,13 +20,32 @@
 #define SERVER_FL_PORT_ARGV_NR 2
 #define SERVER_PORT_ARGV_NR 3
 
-#define CLIENT_HOST_ARGV_NR 1
-#define CLIENT_PORT_ARGV_NR 3
+#define CLIENT_HOST_ARGV_NR 2
+#define CLIENT_PORT_ARGV_NR 4
 
-#define SERVER_MODE 1
-#define CLIENT_MODE 2
+void start_server(char *argv[]);
+void start_client(char *argv[]);
 
-int start_server(char *argv[]) {
+int main(int argc, char *argv[]) {
+    if(argc < 4 || argc > 5) {
+        printf("Invalid number(%d) of arguments.\r\n", argc);
+        printf("Usage server: rev-shell -listen -port <port>\r\n");
+        printf("Usage client: rev-shell -server <host> -port <port>\r\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if(argc == 4 && strcmp(argv[1], "-listen") == 0) {
+        start_server(argv);
+    }
+
+    if(argc == 5 && strcmp(argv[1], "-server") == 0) {
+        start_client(argv);
+    }
+
+    return 0;
+}
+
+void start_server(char *argv[]) {
     printf("Starting server...\r\n");
     char *port = argv[SERVER_PORT_ARGV_NR];
     char *listen_flag = argv[SERVER_FL_LISTEN_ARGV_NR];
@@ -47,10 +66,10 @@ int start_server(char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    return create_server_socket("127.0.0.1", atoi(port));
+    create_server_socket("127.0.0.1", atoi(port));
 }
 
-int start_client(char *argv[]) {
+void start_client(char *argv[]) {
     printf("Starting client...\r\n");
 
     char *host = argv[CLIENT_HOST_ARGV_NR];
@@ -66,25 +85,5 @@ int start_client(char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    return create_client_socket(host, atoi(port));
-}
-
-int main(int argc, char *argv[]) {
-    int mode, server_socket, client_socket;
-
-    if(argc != 4) {
-        printf("Invalid number of arguments.\r\n");
-        printf("Usage server: rev-shell -listen -port <port>\r\n");
-        printf("Usage client: rev-shell -server <host> -port <port>\r\n");
-    }
-
-    if(strcmp(argv[1], "-listen") == 0) {
-        server_socket = start_server(argv);
-        mode = SERVER_MODE;
-    } else {
-        client_socket = start_client(argv);
-        mode = CLIENT_MODE;
-    }
-
-    return 0;
+    create_client_socket(host, atoi(port));
 }
