@@ -6,7 +6,6 @@
 #define MAX_LENGTH_LINE_CODE 2048
 #define MAX_OUTPUT_FILE_NAME_LEN 256
 
-void convert_line_to_hungarian_notation(char *line);
 void convert_line_spaces_with_tab(char *line);
 
 int main(int argc, char *argv[]) {
