@@ -27,10 +27,12 @@ void print_flight(const Flight *flight) {
         printf("\r\nPassengers for flight %s:\r\n", flight->destination);
         print_dotted_line(100);
 
-        Passenger *currentPassenger = flight->passengers;
         printf("%-5s| %-50s| %-3s\r\n", 
             "Seat", "Name", "Age");
 
+        Passenger *currentPassenger = flight->passengers;
+
+        // Loop through all passengers on the flight.
         while(currentPassenger != NULL) {
             printf("%-5hu| %-50s| %-3hu\r\n",
                 currentPassenger->seat_number,
@@ -46,6 +48,7 @@ void print_flight(const Flight *flight) {
     print_dotted_line(100);
 }
 
+// Get flights associated with passenger name.
 unsigned int get_associated_flights_by_passenger_name(const FlightList *flight_list, 
     char passenger_name[PASSENGER_NAME_MAX_LENGTH]) {
 
@@ -55,9 +58,11 @@ unsigned int get_associated_flights_by_passenger_name(const FlightList *flight_l
     unsigned int numberOfAssociatedFlights = 0;
     Flight* currentFlight = flight_list->head;
 
+    // Loop through all flight.
     while (currentFlight != NULL) {
         Passenger* currentPassenger = currentFlight->passengers;
         
+        // Loop through all passengers on the current flight.
         while (currentPassenger != NULL) {
              // If there is a person with the given name on the flight,
              // there is no need to check remaining passengers
@@ -75,9 +80,7 @@ unsigned int get_associated_flights_by_passenger_name(const FlightList *flight_l
     return numberOfAssociatedFlights;
 }
 
-/*
-    Prints out a dotted line in the provided length
-*/
+// Prints out a dotted line in the provided length.
 void print_dotted_line(int length) {
     if(length <= 0)
         return;
@@ -110,6 +113,8 @@ void print_flight_list(const FlightList* flight_list) {
     print_dotted_line(num_of_dots);
 
     Flight *currentFlight = flight_list->head;
+
+    // Loop through all flights.
     while (currentFlight != NULL) {
         printf("%-10s| %-50s| %-10d | %-10d\r\n", 
             currentFlight->flightID, currentFlight->destination, 
@@ -120,9 +125,7 @@ void print_flight_list(const FlightList* flight_list) {
     print_dotted_line(num_of_dots);
 }
 
-/*
-    Adds a flight to the flight list.
-*/
+// Adds a flight to the flight list.
 Flight* add_flight(
     FlightList* flight_list, 
     char flight_id[FLIGHT_ID_MAX_LENGTH], 
@@ -154,6 +157,7 @@ Flight* add_flight(
     return newFlight;
 }
 
+// Delete a flight by id.
 bool delete_flight(FlightList *flight_list, char flight_id[FLIGHT_ID_MAX_LENGTH]) {
     if(flight_list == NULL || flight_list->head == NULL)
         return false;
@@ -188,6 +192,7 @@ bool delete_flight(FlightList *flight_list, char flight_id[FLIGHT_ID_MAX_LENGTH]
 
             Passenger *current_passenger = flight->passengers;
 
+            // Loop through all passengers to free them from memory.
             while (current_passenger != NULL) {
                 Passenger *pPassengerTemp = current_passenger;
                 current_passenger = current_passenger->next;
