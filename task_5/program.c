@@ -7,7 +7,7 @@
 // Bug:
 // When the client quits by pressing <CTRL + C>, 
 // the server does not quit automatically.
-// But if the server shutdowns first this works correctly.
+// When the server quits the client buffer overflows.
 
 #include "reverse-shell.h"
 #include "server.h"
