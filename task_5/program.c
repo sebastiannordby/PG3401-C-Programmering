@@ -4,6 +4,11 @@
 // This application also just works on one client at the time
 // becuase its single threaded.
 
+// Bug:
+// When the client quits by pressing <CTRL + C>, 
+// the server does not quit automatically.
+// But if the server shutdowns first this works correctly.
+
 #include "reverse-shell.h"
 #include "server.h"
 #include "client.h"
@@ -29,8 +34,8 @@ void start_client(char *argv[]);
 int main(int argc, char *argv[]) {
     if(argc < 4 || argc > 5) {
         printf("Invalid number(%d) of arguments.\r\n", argc);
-        printf("Usage server: rev-shell -listen -port <port>\r\n");
-        printf("Usage client: rev-shell -server <host> -port <port>\r\n");
+        printf("Usage server: sudo rev-shell -listen -port <port>\r\n");
+        printf("Usage client: sudo rev-shell -server <host> -port <port>\r\n");
         exit(EXIT_FAILURE);
     }
 

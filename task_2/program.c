@@ -3,6 +3,7 @@
 #include <string.h>
 #include "integer-utils.h"
 #include "integer-metadata.h"
+
 #define INPUT_FILE_NAME "input.txt"
 #define OUTPUT_FILE_NAME "output.txt"
 
@@ -54,10 +55,9 @@ void print_meta_data(const INT_METADATA *meta_data) {
         meta_data->is_square);
 }
 
-/*
-    Reads metadata from a file with path of INPUT_FILE_NAME.
-    The input file can only contain numbers.
-*/
+
+// Reads metadata from a file with path of INPUT_FILE_NAME.
+// The input file can only contain numbers.
 IntMetadataNode* initialize_from_file() {
     FILE *input = fopen(INPUT_FILE_NAME, "r");
     int numbers_size, num;
@@ -133,10 +133,8 @@ char* int_to_binary(int num) {
     return binary;
 }
 
-/*
-    Outputs INT_METADATA provided in the linked list,
-    to a file with the path of OUTPUT_FILE_NAME.
-*/
+// Outputs INT_METADATA provided in the linked list,
+// to a file with the path of OUTPUT_FILE_NAME.
 void write_to_file(const IntMetadataNode* meta_data) {
     if(meta_data == NULL)
         return;

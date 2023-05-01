@@ -1,6 +1,6 @@
 #ifndef __INTEGER_METADATA_H__
 #define __INTEGER_METADATA_H__
-
+#include <stdbool.h>
 /*
     INT_METADATA holds information about a integer.
     This struct was provided in the exam text, but i

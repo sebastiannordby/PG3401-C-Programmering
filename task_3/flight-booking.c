@@ -6,6 +6,7 @@
 
 // Declare functions to skip precendence in code
 void print_dotted_line(int length);
+bool is_seat_taken(Passenger *p, unsigned short seat_number);
 
 /*
     Prints out a flight in the following format:
@@ -211,14 +212,15 @@ bool delete_flight(FlightList *flight_list, char flight_id[FLIGHT_ID_MAX_LENGTH]
     return false;
 }
 
-bool isSeatTaken(Passenger *p, unsigned short seatNumber) {
+// Checks if seat number is taken.
+bool is_seat_taken(Passenger *p, unsigned short seat_number) {
     if(p == NULL)
         return false;
 
-    if(p->seat_number == seatNumber)
+    if(p->seat_number == seat_number)
         return true;
 
-    if(p->next != NULL && p->next->seat_number == seatNumber)
+    if(p->next != NULL && p->next->seat_number == seat_number)
         return true;
 
     return false;
@@ -263,10 +265,11 @@ bool add_passenger(Flight *flight, unsigned short requested_seat_number,
             flight, requested_seat_number);
 
         // Tried to use an existing seatnumber
-        if(isSeatTaken(closestPassenger, requested_seat_number)) {
+        if(is_seat_taken(closestPassenger, requested_seat_number)) {
             printf("Seat: %d is already taken.\r\n", requested_seat_number);
             free(new_passenger);
             new_passenger = NULL;
+
             return false;
         }
 
@@ -292,10 +295,11 @@ bool add_passenger(Flight *flight, unsigned short requested_seat_number,
     return true;
 }
 
+// Removes a passenger from a given flight.
 bool remove_passenger(
     FlightList *flight_list,
-    char flight_id[FLIGHT_ID_MAX_LENGTH], unsigned short seatNumber) {
-    if(flight_id == NULL || seatNumber == 0)
+    char flight_id[FLIGHT_ID_MAX_LENGTH], unsigned short seat_number) {
+    if(flight_id == NULL || seat_number == 0)
         return false;
 
     Flight *flight = get_flight_by_id(flight_list, flight_id);
@@ -305,8 +309,10 @@ bool remove_passenger(
     Passenger *current_passenger = flight->passengers;
     Passenger *previous_passenger = NULL;
 
+    // Loop through the passenger list.
     while(current_passenger != NULL) {
-        if(current_passenger->seat_number == seatNumber) {
+        // Check if it's the targeted passenger.
+        if(current_passenger->seat_number == seat_number) {
             if(previous_passenger != NULL) {
                 previous_passenger->next = current_passenger->next;
             }
@@ -324,7 +330,7 @@ bool remove_passenger(
     return false;
 }
 
-
+// Change passenger seat number.
 bool change_passenger_seat(FlightList *flight_list, char flight_id[FLIGHT_ID_MAX_LENGTH],
     unsigned short current_seat_number, unsigned short requested_seat_number) {
 
@@ -366,6 +372,7 @@ bool change_passenger_seat(FlightList *flight_list, char flight_id[FLIGHT_ID_MAX
         while (prev_passenger->next != current_passenger) {
             prev_passenger = prev_passenger->next;
         }
+
         prev_passenger->next = current_passenger->next;
     }
     
@@ -404,10 +411,8 @@ void print_passenger_list(const Flight *flight) {
     }
 }
 
-/*
-    Returns a flight by the given flightId. 
-    Ignores case sensitivity.
-*/
+// Returns a flight by the given flightId. 
+// Ignores case sensitivity.
 Flight* get_flight_by_id(FlightList *flight_list, char flight_id[FLIGHT_ID_MAX_LENGTH]) {
     if(flight_list == NULL || flight_id == NULL)
         return NULL;
