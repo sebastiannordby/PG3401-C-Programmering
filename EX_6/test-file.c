@@ -3,9 +3,9 @@ int main() {
 
     int i = 0; 
 
-    while(i < 10) {
+    while(i < 10) {   
         printf("I is: %d\r\n", i);
-        i++;
+        i++;   
     }
 
     return 0;

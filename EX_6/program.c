@@ -3,103 +3,80 @@
 #include <string.h>
 #include <ctype.h>
 
-#define MAX_FILENAME_LEN 256
-#define MAX_LINE_LEN 1024
+#define MAX_LENGTH_LINE_CODE 2048
+#define MAX_OUTPUT_FILE_NAME_LEN 256
 
-void replace_while_with_for(char *line);
-void apply_hungarian_notation(char *line);
-void replace_three_spaces_with_tab(char *line);
+void convert_line_to_hungarian_notation(char *line);
+void convert_line_spaces_with_tab(char *line);
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
+        printf("Invalid number of arguments.\r\n");
         printf("Usage: %s <filename.c>\n", argv[0]);
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    char *filename = argv[1];
-    char output_filename[MAX_FILENAME_LEN];
-    sprintf(output_filename, "%s_beautified.c", filename);
+    char *input_file_name = argv[1];
+    if(strlen(input_file_name) < 3) {
+        printf("Specified filename is to short to be a file.\r\n");
+    }
 
-    FILE *input_file = fopen(filename, "r");
+    char output_file_name[MAX_OUTPUT_FILE_NAME_LEN];
+
+    // New file name will be modified_<originalname>
+    sprintf(output_file_name, "modified_%s", input_file_name);
+
+    FILE *input_file = fopen(input_file_name, "r");
     if (input_file == NULL) {
-        perror("Error opening input file");
-        return 1;
+        perror("Error opening the provided file");
+        return EXIT_FAILURE;
     }
 
-    FILE *output_file = fopen(output_filename, "w");
+    FILE *output_file = fopen(output_file_name, "w");
     if (output_file == NULL) {
-        perror("Error opening output file");
+        perror("Error creating output file");
         fclose(input_file);
-        return 1;
+        return EXIT_FAILURE;
     }
 
-    char line[MAX_LINE_LEN];
-    while (fgets(line, MAX_LINE_LEN, input_file) != NULL) {
-        replace_while_with_for(line);
-        apply_hungarian_notation(line);
-        replace_three_spaces_with_tab(line);
-        fputs(line, output_file);
+    char line[MAX_LENGTH_LINE_CODE];
+    while (fgets(line, MAX_LENGTH_LINE_CODE, input_file) != NULL) {
+        convert_line_spaces_with_tab(line); // Insert tab where applicable
+        fputs(line, output_file); // Output result to file
     }
 
     fclose(input_file);
     fclose(output_file);
     printf("Code beautification complete.\n");
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
-void replace_while_with_for(char *line) {
-    char *while_ptr = strstr(line, "while ");
-    if (while_ptr != NULL && isspace(*(while_ptr - 1))) {
-        char *open_paren_ptr = strchr(while_ptr, '(');
-        if (open_paren_ptr != NULL) {
-            char *close_paren_ptr = strrchr(line, ')');
-            if (close_paren_ptr != NULL && close_paren_ptr > open_paren_ptr) {
-                char *open_brace_ptr = strchr(close_paren_ptr, '{');
-                if (open_brace_ptr != NULL) {
-                    *while_ptr = 'f';
-                    *(while_ptr + 1) = 'o';
-                    *(while_ptr + 2) = 'r';
-                    memmove(open_paren_ptr + 1, open_paren_ptr, close_paren_ptr - open_paren_ptr + 1);
-                    sprintf(open_paren_ptr, "%s;", line);
-                    *(open_brace_ptr - 1) = ')';
-                    memmove(open_brace_ptr, open_brace_ptr + 1, strlen(open_brace_ptr));
-                }
-            }
-        }
-    }
-}
-
-void apply_hungarian_notation(char *line) {
-    char *unsigned_int_ptr = strstr(line, "unsigned int ");
-    if (unsigned_int_ptr != NULL && isspace(*(unsigned_int_ptr - 1))) {
-        char *space_ptr = strchr(unsigned_int_ptr, ' ');
-        if (space_ptr != NULL) {
-            int name_len = strlen(space_ptr + 1);
-            char *new_name = malloc(name_len + 3);
-            sprintf(new_name, "ui%s", space_ptr + 1);
-            strncpy(space_ptr + 1, new_name, name_len);
-            free(new_name);
-        }
-    }
-}
-
-void replace_three_spaces_with_tab(char *line) {
-    int i, j;
+// Convert three spaces with tab on a given line.
+void convert_line_spaces_with_tab(char *line) {
+    int current_char, curr_with_replace;
     int len = strlen(line);
 
-    for(i = 0, j = 0; i < len; i++, j++)
+    // Loop over the line.
+    for(current_char = 0, curr_with_replace = 0; current_char < len; current_char++, curr_with_replace++)
     {
-        if(line[i] == ' ' && i+1 < len && line[i+1] == ' ' && i+2 < len && line[i+2] == ' ')
+        // If the current char is whitespace, and its not the last on the line,
+        // check if there is two more spaces where is three spaces in a row. 
+        if(line[current_char] == ' ' && current_char + 1 < len && line[current_char + 1] == ' ' && 
+            current_char + 2 < len && line[current_char + 2] == ' ')
         {
-            line[j] = '\t';
-            i += 2;
+            line[curr_with_replace] = '\t';
+            current_char += 2; // Skip past the two extra whitespaces
         }
         else
         {
-            line[j] = line[i];
+            // If not we can just keep the character as is.
+            line[curr_with_replace] = line[current_char];
         }
     }
 
-    line[j] = '\0';
+    // End the line at j, j should be the counter when spaces replaced 
+    // with a tab character
+    line[curr_with_replace] = '\0';
 }
+
