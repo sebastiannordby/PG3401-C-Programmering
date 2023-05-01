@@ -10,7 +10,7 @@
 char* int_to_binary(int num);
 void print_meta_data(const INT_METADATA *st);
 void write_to_file(const IntMetadataNode* meta_data);
-IntMetadataNode* initialize_from_file();
+IntMetadataNode* initialize_from_file(void);
 
 int main(void) {
     // Read meta data from file
@@ -58,7 +58,7 @@ void print_meta_data(const INT_METADATA *meta_data) {
 
 // Reads metadata from a file with path of INPUT_FILE_NAME.
 // The input file can only contain numbers.
-IntMetadataNode* initialize_from_file() {
+IntMetadataNode* initialize_from_file(void) {
     FILE *input = fopen(INPUT_FILE_NAME, "r");
     int numbers_size, num;
 
