@@ -79,6 +79,17 @@ void tear_down_client(int signal_nr) {
     printf("Client successfully teared down..\r\n");
 }
 
+/*
+    Handles command sent by the server in the following steps:
+    - Read header from server
+        - Handle error
+    - Reader content body(terminal command) from server
+        - Handle error
+    - Check the command actually contains anything
+    - Execute the terminal command recieved using execute_terminal_command
+    - Send the response header back to the server
+    - Send the content body back to the server
+*/
 bool handle_command(int server_socket, client_command *cmd) {
     if(recv(server_socket, &cmd->header, sizeof(cmd->header), 0) == -1) {
         perror("Error reading header"); 

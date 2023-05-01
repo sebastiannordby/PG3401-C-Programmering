@@ -73,6 +73,7 @@ void create_server_socket(const char *host, int port) {
     do{
         printf("Enter command to execute on the client: ");
         still_exec = read_string(terminal_cmd, MAX_COMMAND_LENGTH);
+
         if(send_command_to_client(server_side_client_socket, terminal_cmd)) {
             printf("Successfully sent command: < %s > to client.\r\n", terminal_cmd);
             int response_size;
@@ -86,7 +87,6 @@ void create_server_socket(const char *host, int port) {
                 printf("Response:\r\n%s\r\n", response);
                 free(response);
             }
-
         }
     } while(still_exec && server_is_running);
 
@@ -128,7 +128,7 @@ client_command create_command(char* command_str) {
 // Client should recieve this and execute the terminal_command.
 bool send_command_to_client(int client_socket, char *terminal_command) {
     if(terminal_command == NULL || strlen(terminal_command) == 0)
-        return false; // No need to send an empty command.
+        return false; // No need to send an empty command
 
     client_command cmd = create_command(terminal_command);
     send(client_socket, &cmd.header, sizeof(cmd.header), 0);
