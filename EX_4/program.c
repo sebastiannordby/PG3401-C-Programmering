@@ -244,5 +244,5 @@ int main(int argc, char* argv[]) {
    free(pThreadData);
    pThreadData = NULL;
 
-   return 0;
+   return EXIT_SUCCESS;
 }

@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
     free_flight_list(flight_list);
     printf("\r\nProgram exited. You can now close the terminal.\r\n");
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 void print_menu(void) {
