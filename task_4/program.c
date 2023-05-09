@@ -65,7 +65,8 @@ int count_word_occurrences(char *text_to_search, char *search_word) {
         // Check if the current substring matches the search word
         if (strncmp(&text_to_search[i], search_word, search_word_len) == 0) {
       
-            // Check if the substring is a separate word
+            // Check if the substring is a separate word.
+            // Using isalpha to check that the last character is not in the alphabet.
             if ((i == 0 || !isalpha(text_to_search[i-1])) && 
                 (i + search_word_len == text_to_search_len || !isalpha(text_to_search[i + search_word_len]))) {
                 occurences++;
