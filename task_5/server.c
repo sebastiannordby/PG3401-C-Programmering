@@ -121,11 +121,17 @@ client_response* read_command_response(void) {
     printf("Response length: %d\r\n", cl_response->content_length);
 
     if(cl_response->content_length > 0) {
+        if(cl_response->content_length > MAX_CLIENT_RESPOSE)
+            cl_response->content_length = MAX_CLIENT_RESPOSE;
+
         if(recv(server_side_client_socket, &cl_response->content_body, cl_response->content_length, 0) <= 0) {
             perror("Error receiving client body(content)");
             free(cl_response);
             return NULL;
         }
+
+        // Terminate the response from the client.
+        cl_response->content_body[cl_response->content_length] = '\0';
     }
 
     return cl_response;
@@ -147,14 +153,14 @@ bool ping_client(void) {
 }
 
 void server_respond_to_ping(void) {
-    int pong_length = strlen(PONG_MESSAGE);
-    char pong_message[pong_length];
+    // int pong_length = strlen(PONG_MESSAGE);
+    // char pong_message[pong_length];
         
-    if(send(server_side_client_socket, &pong_message, pong_length, 0) == -1){
-        perror("Error sending pong message");
-    }
+    // if(send(server_side_client_socket, &pong_message, pong_length, 0) == -1){
+    //     perror("Error sending pong message");
+    // }
 
-    printf("respond_to_ping: %s\r\n", pong_message);
+    // printf("respond_to_ping: %s\r\n", pong_message);
 }
 
 // When CTRL + C is pressed the server 
