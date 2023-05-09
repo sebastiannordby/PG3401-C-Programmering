@@ -49,38 +49,34 @@ typedef struct ThreadData {
 
 // Counts number of times the search_word occur in the text_to_search.
 // isalpha() checks if a character is in the alphabet or not,
-int countWordOccurences(char *text_to_search, char *search_word) {
-    int count = 0;
+int count_word_occurrences(char *text_to_search, char *search_word) {
+    int occurences = 0;
     int text_to_search_len = strlen(text_to_search);
     int search_word_len = strlen(search_word);
+    int i, j;
 
-    // Loop over every character in the text_to_search    
-    for (int i = 0; i < text_to_search_len; i++) {
-        // If the character at in the search text is equal
-        // to the starting character at the search word
-        if (text_to_search[i] == search_word[0]) {
-            int j;
+    // Go through each character thats a difference in the lengths.
+    // So if the text_to_search is: oHamlet
+    // And the search_word is: Hamlet
+    // It will have to loop: strlen(oHamlet) - strlen(Hamlet); 
+    // Which is one time to compare the words using the string comparison.
+    for (i = 0; i <= text_to_search_len - search_word_len; i++) {
 
-            // We start at 1, because the if above checks 
-            // whether the first characters match.
-            // Then we loop through the other characters and see if those match as well
-            // if not we break.
-            for (j = 1; j < text_to_search_len; j++) {
-                if (text_to_search[i + j] != search_word[j]) 
-                    break;
-            }
-
-            // If we have not hit the break above, j would be equal to the search_word_len.
-            // And if the text is looped through or is not a letter in alpabet
-            if (j == search_word_len && 
-               (i + j == text_to_search_len || !isalpha(text_to_search[i + j]))) {
-                count++;
+        // Check if the current substring matches the search word
+        if (strncmp(&text_to_search[i], search_word, search_word_len) == 0) {
+      
+            // Check if the substring is a separate word
+            if ((i == 0 || !isalpha(text_to_search[i-1])) && 
+                (i + search_word_len == text_to_search_len || !isalpha(text_to_search[i + search_word_len]))) {
+                occurences++;
+                i += search_word_len - 1;
             }
         }
     }
 
-    return count;
+    return occurences;
 }
+
 
 // Thread A reads text from a given file, provided by ThreadData.
 // Should fill up the buffer with size of makro BUFFER_SIZE.
@@ -134,7 +130,6 @@ void* thread_B(void* arg) {
 
    memset(params->count, 0, sizeof(params->count));
 
-
    while (1) {
       pthread_mutex_lock(&params->mutex);
 
@@ -156,7 +151,7 @@ void* thread_B(void* arg) {
       // Then append the frequency to the appropriate counter.
       // May return 0, but appending 0 does not actually do anything.
       for(int i = 0; i < NUMBER_OF_EXTRA_WORDS; i++) {
-         word_count[i] += countWordOccurences(params->buffer, words[i]);
+         word_count[i] += count_word_occurrences(params->buffer, words[i]);
       }
 
       params->bytes_in_buffer = 0; // Clear the buffer
@@ -188,10 +183,7 @@ void* thread_B(void* arg) {
 }
 
 int main(int argc, char* argv[]) {
-   printf("Argc: %d\r\n", argc);
-
    char* fileName = argv[1];
-   printf("Test: %s\r\n", fileName);
 
    if(argc > 2) {
       printf("Too many arguments.\r\n");
