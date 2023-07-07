@@ -31,7 +31,6 @@ typedef struct ThreadData {
    // or writing data.
    pthread_mutex_t mutex;
 
-
    pthread_cond_t cond_full, cond_empty;
 
    // Number of bytes in the buffer as of know
